@@ -1,0 +1,29 @@
+[
+    {
+        "action": "git",
+        "fileName": "ninja",
+        "url": "git clone -b v1.11.1 --depth=1 https://github.com/ninja-build/ninja.git",
+        "build": "cmake",
+        "args": ""
+    }
+
+    ,
+    {
+        "action": "git",
+        "fileName": "json",
+        "url": "git clone -b v3.11.3 --depth=1 https://github.com/nlohmann/json.git",
+        "build": "cmake",
+        "args": ""
+    }
+
+    ,
+    {
+        "action": "git",
+        "fileName": "websocketpp",
+        "url": "git clone -b 0.8.2 --depth=1 https://github.com/zaphoyd/websocketpp.git",
+        "build": "cmake",
+        "args": "-DBUILD_EXAMPLES=0 -DBUILD_TESTS=0"
+    }
+]
+
+
