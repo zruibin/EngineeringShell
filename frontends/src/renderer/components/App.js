@@ -69,7 +69,7 @@ class App extends React.Component {
     this.setState((state,props) => ({
       title: 'Hello, Electron And React!',
     }), () =>{
-      logger.debug("[App]", this.state.title)
+      logger.debug("[App]", this.state.title);
     });
   };
 

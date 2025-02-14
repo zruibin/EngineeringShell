@@ -7,12 +7,12 @@
 
 const logger = require('electron-log')
  
-logger.transports.file.level = 'debug'
-logger.transports.file.maxSize = 1002430 // 最大不超过10M
-logger.transports.file.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}]{scope}{text}' // 设置文件内容格式
-let date = new Date()
-date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
-logger.transports.file.fileName = date + '.log' // 创建文件名格式为 '时间.log' (2023-02-01.log)
+logger.transports.file.level = 'debug';
+logger.transports.file.maxSize = 1002430; // 最大不超过10M
+logger.transports.file.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}]{scope}{text}'; // 设置文件内容格式
+let date = new Date();
+date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+logger.transports.file.fileName = date + '.log'; // 创建文件名格式为 '时间.log' (2023-02-01.log)
 
 /*
 Linux: ~/.config/<app name>/log.log
