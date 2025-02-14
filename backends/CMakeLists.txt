@@ -169,6 +169,9 @@ set(DEPENDS_LIBS
 
 list(APPEND ALL_SOURCES ${MODULES} ${DEPENDS_LIBS})
 
+add_definitions(-DASIO_STANDALONE)
+add_definitions(-DASIO_HAS_STD_SYSTEM_ERROR)
+
 #-------------------------------------------------------------------------------
 
 set(HEADERS
