@@ -3,6 +3,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { spawn } = require('child_process')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 // Any directories you will be adding code/files into, need to be added to this array so webpack will pick them up
 const appPath = "./src/renderer"
@@ -32,7 +33,7 @@ module.exports = (mode) => {
   console.log(mode);
   const isProduction = !(mode.WEBPACK_SERVE == true);
   console.log('Env: '+ (isProduction ? 'production' : 'development'));
-  return {
+  return [{
     module: {
       rules: [
         {
@@ -95,7 +96,39 @@ module.exports = (mode) => {
       chunks: false
     } : {},
     optimization: isProduction ? {
-      minimize: true
+      minimize: true,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false, // 去除注释
+          },
+        },
+        extractComments: false, // 不将注释提取到单独的文件
+      })],
     } : {}
-  }
+  }, isProduction ? {
+    target: "electron-main",
+    context: path.resolve(__dirname, '..'),
+    entry: {
+      main: './src/main/main.js'
+    },
+    output: {
+      filename: '[name].js',
+      path: path.resolve(__dirname, './dist/main'),
+    },
+    plugins: [
+      new CleanWebpackPlugin()
+    ],
+    optimization: isProduction ? {
+      minimize: true,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false, // 去除注释
+          },
+        },
+        extractComments: false, // 不将注释提取到单独的文件
+      })],
+    } : {}
+  } : {}]
 }

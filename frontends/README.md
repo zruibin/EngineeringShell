@@ -14,25 +14,26 @@ npm install
 npm run start
 ```
 
-#### Build the app (automatic)
-
-```
-npm run package
-```
-
 #### Build the app (manual)
 
 ```
 npm run build
 ```
 
-#### Build the Native (must)
+#### Build the app
 
 ```
-npm run native
+npm run package
 ```
 
-#### Test the app (after `npm run build`)
+
+#### Build the app for install
+
 ```
-npm run prod
+npm run installer
 ```
+
+## 
+
+* https://toyobayashi.github.io/2020/01/06/ElectronAsarEncrypt/
+* https://juejin.cn/post/6943107568336109575
