@@ -12,13 +12,14 @@
     
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.js --mode production",
     "package": "npm run build && electron-builder --dir",
-    "install": "npm run build && electron-builder"
+    "installer": "npm run build && electron-builder"
   },
   "build": {
     "appId": "cn.zruibin.engineering_shell",
     "productName": "Engineering Shell",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
@@ -43,7 +44,14 @@
         "AppImage",
         "deb"
       ]
-    }
+    },
+    "extraResources": [
+      {
+        "from": "./subprograms",
+        "to": "subprograms",
+        "filter": ["**/*"]
+      }
+    ]
   },
   "devDependencies": {
     "electron": "32.2.8",

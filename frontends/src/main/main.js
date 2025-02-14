@@ -44,7 +44,7 @@ function createWindow() {
       slashes: true
     });
   } else {
-    let dirname = __dirname.replace("/src/main", "");
+    const dirname = __dirname.replace("/src/main", "");
     let filePath = path.join(dirname, 'dist', 'index.html');
     indexPath = url.format({
       protocol: 'file:',
@@ -53,8 +53,10 @@ function createWindow() {
     });
   }
 
+  loadSubProgram();
+
   mainWindow.loadURL(indexPath);
-  logger.info(tag, "main.js loaded.1", "indexPath:", indexPath);
+  logger.info(tag, "main.js loaded.", "indexPath:", indexPath);
 
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', () => {
@@ -95,3 +97,50 @@ if (!gotTheLock) {
     }
   })
 }
+
+function loadSubProgram() {
+  const appPath = app.getAppPath();
+  logger.debug(tag, `appPath: ${appPath}`);
+  let subprogramsPath;
+  if (app.isPackaged) {
+    subprogramsPath = path.join(appPath, '..', 'subprograms');
+  } else {
+    subprogramsPath = path.join(appPath, 'subprograms');
+  }
+
+  // 确定子程序的可执行文件路径
+  const platform = process.platform;
+  let subprogramExecutable;
+  const name = "Backends";
+
+  switch (platform) {
+    case 'darwin':
+      subprogramExecutable = path.join(subprogramsPath, name); // macOS 可执行文件通常无扩展名
+      break;
+    case 'win32':
+      subprogramExecutable = path.join(subprogramsPath, `${name}.ext`);
+      break;
+    case 'linux':
+      subprogramExecutable = path.join(subprogramsPath, `${name}-linux`);
+      break;
+    default:
+      console.error('Unsupported platform.');
+      return;
+  }
+
+  logger.info(tag, `subprogramPath: ${subprogramExecutable}`);
+
+  const { execFile } = require('child_process');
+  execFile(subprogramExecutable, ['arg1', 'arg2'], (error, stdout, stderr) => {
+    if (error) {
+      logger.error(`执行子程序出错: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      logger.error(`子程序输出错误: ${stderr}`);
+      return;
+    }
+    logger.info(`子程序输出: ${stdout}`);
+  });
+}
+
