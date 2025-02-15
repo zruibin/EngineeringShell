@@ -43,8 +43,8 @@ function createWindow() {
       slashes: true
     });
   } else {
-    const dirname = __dirname.replace("/dist/main", "");
-    let filePath = path.join(dirname, 'dist/renderer/', 'index.html');
+    const appPath = app.getAppPath();
+    let filePath = path.join(appPath, 'dist/renderer/', 'index.html');
     indexPath = url.format({
       protocol: 'file:',
       pathname: filePath,
