@@ -9,7 +9,10 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.renderer.config.js --mode development",
     "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.renderer.config.js && electron --noDevServer .",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js --mode production",
+
+    "build_renderer": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js --mode production",
+    "build_main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js --mode production",
+    "build": "npm run build_renderer && npm run build_main",
     "package": "npm run build && electron-builder --dir",
     "installer": "npm run build && electron-builder"
   },
@@ -23,8 +26,12 @@
     "files": [
       "dist/**/*",
       "src/main/**/*",
+      "!dist/**/*/{main.js.LICENSE.txt,main.js.map}",
       "node_modules/**/*",
-      "!node_modules/**/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
+      "!node_modules/**/*/{README,readme,LICENSE,license}",
+      "!node_modules/**/*/*.md",
+      "!node_modules/**/*/*.map",
+      "!node_modules/**/*/*.txt"
     ],
     "mac": {
       "target": [

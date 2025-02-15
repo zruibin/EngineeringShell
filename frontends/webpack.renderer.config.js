@@ -60,10 +60,10 @@ module.exports = (mode) => {
     },
     target: 'electron-renderer',
     entry: appPath + '/index',
-    // output: {
-    //   path:path.join(__dirname,'./out/'),
-    //   filename:'main.js'
-    // },
+    output: isProduction ? {
+      path:path.join(__dirname,'./dist/renderer/'),
+      filename:'[name].js',
+    } : {},
     plugins: isProduction ? plugins : pluginsDev,
     devtool: isProduction ? 'source-map':'inline-source-map',
     devServer: isProduction ? {} : {
