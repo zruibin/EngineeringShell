@@ -7,8 +7,9 @@
   "version": "1.0.0",
   "author": "Ruibin.Chow",
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.renderer.config.js --mode development",
-    "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.renderer.config.js && electron --noDevServer .",
+    "check": "node check.js",
+    "start": "npm run check && cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.renderer.config.js --mode development",
+    "prod": "npm run check && cross-env NODE_ENV=production webpack --mode production --config webpack.renderer.config.js && electron --noDevServer .",
     "build_renderer": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js --mode production",
     "build_main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js --mode production",
     "build": "npm run build_renderer && npm run build_main",
