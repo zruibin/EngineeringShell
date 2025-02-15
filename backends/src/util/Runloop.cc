@@ -43,7 +43,7 @@ void RunLoopInitMain(void) {
 }
 
 void RunLoopRun(void) {
-    uint16_t threadId = util::GetCurrentThreadId();
+    uint32_t threadId = util::GetCurrentThreadId();
     if (__runloopMap.find(threadId) != __runloopMap.end()) {
         return;
     }

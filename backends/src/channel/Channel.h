@@ -9,6 +9,7 @@
 #define CHANNEL_H
 
 #include <string>
+#include <memory>
 
 namespace channel {
 
@@ -51,6 +52,8 @@ protected:
     ClosedHander closedHander_{ nullptr };
     ReceivedHandler receivedHandler_{ nullptr };
 };
+
+std::shared_ptr<channel::Channel> GetChannelRef();
 
 }
 
