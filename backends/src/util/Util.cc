@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <thread>
 #include <string>
+#include <sstream>
 
 
 namespace util {
@@ -65,7 +66,7 @@ std::string GetCurrentTimestampString(int time_stamp_type) {
 }
 
 std::string GetCurrentTimeString(void) {
-    return GetCurrentTimestampString(2);
+    return GetCurrentTimestampString(1);
 }
 
 int64_t GetCurrentTimeSeconds(void) {
@@ -112,10 +113,10 @@ const char* GetCurrentThreadName() {
     return threadName;
 }
 
-int16_t GetCurrentThreadId(void) {
+uint32_t GetCurrentThreadId(void) {
     std::ostringstream oss;
     oss << std::hash<std::thread::id>()(std::this_thread::get_id());
-    unsigned short tid = std::stoull(oss.str());
+    uint32_t tid = std::stoull(oss.str());
     return tid;
 }
 

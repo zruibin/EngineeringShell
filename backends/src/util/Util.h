@@ -22,7 +22,7 @@ int64_t GetCurrentTimeMilliseconds(void);
 
 const char* GetRandomString(int32_t len);
 const char* GetCurrentThreadName();
-int16_t GetCurrentThreadId(void);
+uint32_t GetCurrentThreadId(void);
 
 }
 

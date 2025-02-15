@@ -152,6 +152,7 @@ link_directories(
 # modules
 include("${src_dir}/log/CMakeLists.txt")
 include("${src_dir}/util/CMakeLists.txt")
+include("${src_dir}/channel/CMakeLists.txt")
 
 # libs
 include("${libs_dir}/asio/CMakeLists.txt")
@@ -160,6 +161,7 @@ include("${libs_dir}/nlohmann_json_reflect/CMakeLists.txt")
 set(MODULES
     ${log_all_file}
     ${util_all_file}
+    ${channel_all_file}
 )
 
 set(DEPENDS_LIBS
