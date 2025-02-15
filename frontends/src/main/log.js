@@ -23,27 +23,33 @@ windows: %USERPROFILE%\AppData\Roaming\<app name>\log.log
  // 可以将文件放置到指定文件夹中，例如放到安装包文件夹中
 //  const path = require('path')
 //  const exePath = path.dirname("/Users/ruibin.chow/Desktop/") // 获取到安装目录的文件夹名称
-//  // 指定日志文件夹位置
+// 指定日志文件夹位置
 //  logger.transports.file.resolvePath = () => exePath+date+'.log'
+
+const tag = "[F][Main]";
 
 // 有六个日志级别error, warn, info, verbose, debug, silly。默认是silly
 module.exports = {
   info() {
-    logger.info("[I]", ...arguments);
+    logger.info(`${tag}[I]`, ...arguments);
   },                   
   warn() {
-    logger.warn("[W]", ...arguments);
+    logger.warn(`${tag}[W]`, ...arguments);
   },
   error() {
-    logger.error("[E]", ...arguments);
+    logger.error(`${tag}[E]`, ...arguments);
   },
   debug() {
-    logger.debug("[D]", ...arguments);
+    logger.debug(`${tag}[D]`, ...arguments);
   },
   verbose() {
-    logger.verbose("[V]", ...arguments);
+    logger.verbose(`${tag}[V]`, ...arguments);
   },
   silly() {
-    logger.silly("[S]", ...arguments);
+    logger.silly(`${tag}[S]`, ...arguments);
+  },
+
+  filePath() {
+    return logger.transports.file?.getFile()?.path ?? '';
   }
 };

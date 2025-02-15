@@ -7,7 +7,7 @@ import emitter from "../eventbus"
 class App extends React.Component {
   constructor(props) {
     super(props);
-    logger.info("[App]", "App Load.");
+    logger.info("App Load.");
 
     this.state = {
       title: "Hello, Engineering Shell!",
@@ -20,24 +20,24 @@ class App extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state){
-    logger.debug("[App]", "执行getDerivedStateFromProps");
+    logger.debug("执行getDerivedStateFromProps");
     return null;
   }
 
   componentDidMount(){
-    logger.debug("[App]", "执行componentDidMount");
+    logger.debug("执行componentDidMount");
     emitter.on("app", (arg) => {
-      logger.debug("[App]", "emitter.on:", arg);
+      logger.debug("emitter.on:", arg);
     });
   }
 
   componentWillUnmount() {
-    logger.debug("[App]", "componentWillUnmount");
+    logger.debug("componentWillUnmount");
     emitter.off("app", null);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    logger.debug("[App]", "shouldComponentUpdate");
+    logger.debug("shouldComponentUpdate");
     if (this.state.title !== nextState.title) {
       return true;
     }
@@ -45,20 +45,20 @@ class App extends React.Component {
   }
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    logger.debug("[App]", "getSnapshotBeforeUpdate");
+    logger.debug("getSnapshotBeforeUpdate");
     return null;
   }
 
   componentDidUpdate(prevProps, prevState){
-    logger.debug("[App]", "componentDidUpdate");
+    logger.debug("componentDidUpdate");
     if (prevState.title !== this.state.title) {
-      logger.debug("[App]", "state中的info数据改变了");
+      logger.debug("state中的info数据改变了");
     }
   }
   
   info() {
     Message.info("Engineering Shell");
-    logger.debug("[App]", "Alert.");
+    logger.debug("Alert.");
     emitter.emit('app', "haha.");
 
     /*
@@ -69,7 +69,7 @@ class App extends React.Component {
     this.setState((state,props) => ({
       title: 'Hello, Electron And React!',
     }), () =>{
-      logger.debug("[App]", this.state.title);
+      logger.debug(this.state.title);
     });
   };
 
@@ -86,7 +86,7 @@ class App extends React.Component {
   };
 
   render() {
-    logger.debug("[App]", "render");
+    logger.debug("render");
     return (
       <div>
         <h1>{this.state.title}</h1>

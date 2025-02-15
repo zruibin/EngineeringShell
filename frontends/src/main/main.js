@@ -1,10 +1,9 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const url = require('url');
 const logger = require('./log');
-let tag = "[main]";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -53,10 +52,8 @@ function createWindow() {
     });
   }
 
-  loadSubProgram();
-
   mainWindow.loadURL(indexPath);
-  logger.info(tag, "main.js loaded.", "indexPath:", indexPath);
+  logger.info("main.js loaded.", "indexPath:", indexPath);
 
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', () => {
@@ -69,38 +66,27 @@ function createWindow() {
   })
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
-    mainWindow = null;
-  })
+  mainWindow.on('closed', (event) => {
+    const response = dialog.showMessageBoxSync(mainWindow, {
+      type: 'question',
+      buttons: ['是', '否'],
+      message: '您确定要退出应用吗？',
+    });
+
+    logger.debug(`mainWindow closed, response(${response}), event(${JSON.stringify(event)})`);
+    // 根据用户的选择决定是否继续退出
+    if (response === 1) {
+      logger.info("app quit on preventDefault.");
+      // 用户点击了'否'，阻止退出
+      event.preventDefault(); // 为啥不生效？？？
+    }
+  });
 }
 
-
-const gotTheLock = app.requestSingleInstanceLock();
- 
-if (!gotTheLock) {
-  logger.error(tag, "It was not single instance then app quit.");
-  app.quit();
-} else {
-  app.on('ready', () => {
-    createWindow();
-  })
-
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
-  })
-
-  app.on('activate', () => {
-    if (mainWindow === null) {
-      createWindow();
-    }
-  })
-}
-
-function loadSubProgram() {
+function runSubProgram() {
+  logger.debug(`log path: ${ logger.filePath() }`)
   const appPath = app.getAppPath();
-  logger.debug(tag, `appPath: ${appPath}`);
+  logger.debug(`appPath: ${appPath}`);
   let subprogramsPath;
   if (app.isPackaged) {
     subprogramsPath = path.join(appPath, '..', 'subprograms');
@@ -128,7 +114,7 @@ function loadSubProgram() {
       return;
   }
 
-  logger.info(tag, `subprogramPath: ${subprogramExecutable}`);
+  logger.info(`subprogramPath: ${subprogramExecutable}`);
 
   const { execFile } = require('child_process');
   execFile(subprogramExecutable, ['arg1', 'arg2'], (error, stdout, stderr) => {
@@ -143,4 +129,61 @@ function loadSubProgram() {
     logger.info(`子程序输出: ${stdout}`);
   });
 }
+
+function init() {
+  runSubProgram();
+  createWindow();
+}
+
+function destory() {
+
+}
+
+
+const gotTheLock = app.requestSingleInstanceLock();
+ 
+if (!gotTheLock) {
+  logger.error("It was not single instance then app quit.");
+  app.quit();
+} else {
+  app.on('ready', () => {
+    init();
+  });
+
+  app.on('activate', () => {
+    if (mainWindow === null) {
+      init();
+    }
+  });
+
+  app.on('close', () => {
+    logger.info("app quit.");
+    destory();
+    app.quit();
+  });
+
+  app.on('window-all-closed', () => {
+    logger.info("app quit on window-all-closed.");
+    if (process.platform !== 'darwin') {
+      destory();
+      app.quit();
+    }
+  });
+
+  app.on('before-window-close', (event) => {
+    logger.info("app quit on before-window-close.");
+  });
+
+  app.on('quit', (event, exitCode) => {
+    logger.info(`app quit, exitCode(${exitCode})`);
+  });
+}
+
+ipcMain.on('command:close', (event, arg) => {
+  logger.info("app quit on ipc close.");
+  destory();
+  app.quit();
+});
+
+
 

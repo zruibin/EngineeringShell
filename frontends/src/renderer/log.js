@@ -18,28 +18,30 @@ if (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1){
   logger.transports.file.fileName = date + '.log' // 创建文件名格式为 '时间.log' (2023-02-01.log)
 } 
 
+const tag = "[F][App]";
+
 module.exports = {
   info() {
-    logger.info("[I]", ...arguments);
+    logger.info(`${tag}[I]`, ...arguments);
   },                   
   warn() {
-    logger.warn("[W]", ...arguments);
+    logger.warn(`${tag}[W]`, ...arguments);
   },
   error() {
-    logger.error("[E]", ...arguments);
+    logger.error(`${tag}[E]`, ...arguments);
   },
   debug() {
     if (isElectron) {
-      logger.debug("[D]", ...arguments);
-      console.log("[D]", ...arguments);
+      logger.debug(`${tag}[D]`, ...arguments);
+      console.log(`${tag}[D]`, ...arguments);
     } else {
-      logger.log("[D]", ...arguments);
+      logger.log(`${tag}[D]`, ...arguments);
     }
   },
   verbose() {
-    logger.verbose("[V]", ...arguments);
+    logger.verbose(`${tag}[V]`, ...arguments);
   },
   silly() {
-    logger.silly("[S]", ...arguments);
+    logger.silly(`${tag}[S]`, ...arguments);
   }
 };
