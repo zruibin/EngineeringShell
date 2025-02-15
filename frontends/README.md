@@ -29,7 +29,7 @@ npm run package
 #### Build the app for install
 
 ```
-npm run installer
+npm run dist
 ```
 
 ### .npmrc

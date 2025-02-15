@@ -1,10 +1,7 @@
 const webpack = require('webpack')
 const path = require('path')
-const { spawn } = require('child_process')
 const TerserPlugin = require("terser-webpack-plugin");
-
-const appPath = "./src/main"
-const defaultInclude = path.resolve(__dirname, appPath)
+const ChangeMainPlugin = require('./plugin/ChangeMainPlugin');
 
 const pluginsDev = [
   new webpack.DefinePlugin({
@@ -16,6 +13,9 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('production')
   }),
+  new ChangeMainPlugin({
+    newMain: 'dist/main/main.js' // 指定新的main字段值
+  })
 ];
 
 module.exports = (mode) => {
@@ -23,10 +23,12 @@ module.exports = (mode) => {
   console.log('Env: '+ (isProduction ? 'production' : 'development'));
   return {
     target: 'electron-main',
-    entry: appPath + '/main',
+    devtool: 'none',
+    entry: "./src/main" + '/main',
     output: {
       path:path.join(__dirname,'./dist/main/'),
       filename:'[name].js',
+      clean: true,
     },
     plugins: isProduction ? plugins : pluginsDev,
     devtool: isProduction ? 'source-map':'inline-source-map',

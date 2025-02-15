@@ -63,6 +63,7 @@ module.exports = (mode) => {
     output: isProduction ? {
       path:path.join(__dirname,'./dist/renderer/'),
       filename:'[name].js',
+      clean: true,
     } : {},
     plugins: isProduction ? plugins : pluginsDev,
     devtool: isProduction ? 'source-map':'inline-source-map',
