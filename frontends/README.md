@@ -49,6 +49,8 @@ ELECTRON_MIRROR=https://www.npmmirror.com/mirrors/electron/
 * https://juejin.cn/post/6943107568336109575
 * https://www.jianshu.com/p/35abb68d0331
 * https://juejin.cn/post/7222556620977733693
+* https://github.com/herberttn/bytenode-webpack-plugin
+* https://github.com/spaceagetv/electron-bytenode-example
 
 
 
