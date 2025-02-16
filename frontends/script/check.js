@@ -8,10 +8,13 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-const packageJsonPath = path.resolve(__dirname, './package.json');
-
 async function updateMainField() {
   try {
+    const packageJsonName = 'package.json';
+    const parentDir = path.dirname(__dirname);
+    const packageJsonPath = path.join(parentDir, packageJsonName);
+    console.log(`packageJsonPath: ${packageJsonPath}`);
+
     const mainEntry = "src/main/main.js";
     const packageJson = await fs.readJson(packageJsonPath);
 
