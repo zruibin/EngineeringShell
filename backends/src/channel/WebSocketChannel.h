@@ -22,7 +22,7 @@ class WebSocketChannel: public Channel {
 public:
     void Open() override;
     void Close() override;
-    void AyncRun() override;
+    void AsyncRun() override;
     void Send(const std::string&) override;
     void Send(const uint8_t*, std::size_t) override;
     virtual ~WebSocketChannel();

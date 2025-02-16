@@ -61,7 +61,7 @@ void WebSocketChannel::Close() {
     }
 }
 
-void WebSocketChannel::AyncRun() {
+void WebSocketChannel::AsyncRun() {
     std::thread([this](){
         try {
             server_.init_asio();

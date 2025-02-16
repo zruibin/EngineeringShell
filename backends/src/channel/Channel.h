@@ -31,7 +31,7 @@ class Channel {
 public:
     virtual void Open() = 0;
     virtual void Close() = 0;
-    virtual void AyncRun() = 0;
+    virtual void AsyncRun() = 0;
     virtual void Send(const std::string&) = 0;
     virtual void Send(const uint8_t*, std::size_t) = 0;
     virtual ~Channel() = default;

@@ -19,7 +19,7 @@ int main() {
     auto channelRef = channel::GetChannelRef();
     if (channelRef) {
         channelRef->Open();
-        channelRef->AyncRun();
+        channelRef->AsyncRun();
     }
     
     RunLoopRun();
