@@ -4,6 +4,7 @@ const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const url = require('url');
 const logger = require('./log');
+const channel = require("./channel/channel");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -63,6 +64,14 @@ function createWindow() {
     if (dev) {
       mainWindow.webContents.openDevTools();
     }
+
+    channel.onReceive(msg => {
+      logger.info('收到服务器消息:', msg);
+    });
+    channel.asyncRun().then(code => {
+        logger.info(`asyncRun, code(${code})`);
+        channel.send(logger.filePath());
+    });
   })
 
   // Emitted when the window is closed.
