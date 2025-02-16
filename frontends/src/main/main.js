@@ -8,7 +8,7 @@ const channel = require("./channel/channel");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow = null;
 
 // Keep a reference for dev mode
 let dev = false;
@@ -66,29 +66,24 @@ function createWindow() {
     }
 
     channel.onReceive(msg => {
-      logger.info('收到服务器消息:', msg);
+      logger.debug('收到服务器消息:', msg);
     });
     channel.asyncRun().then(code => {
         logger.info(`asyncRun, code(${code})`);
         channel.send(logger.filePath());
+    }).catch(error => {
+        logger.error('连接错误:', error);
     });
   })
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', (event) => {
-    const response = dialog.showMessageBoxSync(mainWindow, {
-      type: 'question',
-      buttons: ['是', '否'],
-      message: '您确定要退出应用吗？',
-    });
+  mainWindow.on('close', (event) => {
+    logger.debug(`mainWindow close, event(${JSON.stringify(event)})`);
+    showExitAlert(event);
+  });
 
-    logger.debug(`mainWindow closed, response(${response}), event(${JSON.stringify(event)})`);
-    // 根据用户的选择决定是否继续退出
-    if (response === 1) {
-      logger.info("app quit on preventDefault.");
-      // 用户点击了'否'，阻止退出
-      event.preventDefault(); // 为啥不生效？？？
-    }
+  mainWindow.on('closed', (event) => {
+    logger.debug(`mainWindow closed, event(${JSON.stringify(event)})`);
+    mainWindow = null;
   });
 }
 
@@ -145,7 +140,7 @@ function init() {
 }
 
 function destory() {
-
+  channel.close();
 }
 
 
@@ -156,19 +151,23 @@ if (!gotTheLock) {
   app.quit();
 } else {
   app.on('ready', () => {
+    logger.info(`app ready.`);
     init();
   });
 
   app.on('activate', () => {
-    if (mainWindow === null) {
+    logger.info(`app activate, mainWindow: ${mainWindow}`);
+    if (mainWindow) {
+      // 如果窗口最小化，恢复窗口
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      // 如果窗口隐藏，显示窗口
+      if (!mainWindow.isVisible()) mainWindow.show()
+      // 聚焦窗口
+      mainWindow.focus()
+    } else {
+      // 兜底逻辑：重新创建窗口
       init();
     }
-  });
-
-  app.on('close', () => {
-    logger.info("app quit.");
-    destory();
-    app.quit();
   });
 
   app.on('window-all-closed', () => {
@@ -179,20 +178,39 @@ if (!gotTheLock) {
     }
   });
 
-  app.on('before-window-close', (event) => {
-    logger.info("app quit on before-window-close.");
+  app.on('before-quit', (event) => {
+    logger.info(`app before-quit.`);
+    showExitAlert(event);
   });
 
   app.on('quit', (event, exitCode) => {
+    destory();
     logger.info(`app quit, exitCode(${exitCode})`);
   });
 }
 
-ipcMain.on('command:close', (event, arg) => {
-  logger.info("app quit on ipc close.");
-  destory();
-  app.quit();
-});
+function showExitAlert(event) {
+  // 阻止默认退出行为
+  event.preventDefault();
+
+  // 弹出同步确认对话框
+  const result = dialog.showMessageBoxSync(mainWindow, {
+    type: 'question',
+    buttons: ['取消', '确认退出'],
+    title: '确认退出',
+    message: '您确定要退出应用吗？',
+  });
+
+  // 如果用户点击确认退出（按钮索引为1）
+  if (result === 1) {
+    // 移除事件监听，避免循环触发
+    app.removeAllListeners('before-quit');
+    // 强制退出应用
+    app.exit();
+  } else {
+    mainWindow.hide();
+  }
+}
 
 
 

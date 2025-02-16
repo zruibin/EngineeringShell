@@ -8,7 +8,7 @@
 
 #include "log/Logger.h"
 #include <iostream>
-#include "log/LogFileManager.h"
+#include "LogSinker.h"
 #include "util/Util.h"
 
 namespace logger {
@@ -37,7 +37,7 @@ LogMessage::LogMessage(const char* file, int line, LoggingSeverity severity, boo
     severity_ = severity;
     std::string fileStr(file);
             stringBuffer_->append(util::GetCurrentTimeString());
-    stringBuffer_->append(" [");
+    stringBuffer_->append(" [B][");
             stringBuffer_->append(std::to_string(util::GetCurrentThreadId()));
     stringBuffer_->append("]");
     if (!origin_) {
@@ -59,9 +59,7 @@ LogMessage::~LogMessage() {
         stringBuffer_->append("\n");
     }
     std::cout << stringBuffer_->c_str();
-    if (severity_ >= minWriteLevel) {
-        LogFileManager::GetInstance().Write(stringBuffer_->c_str());
-    }
+    LogSinker::GetInstance().Write(stringBuffer_->c_str());
     delete stringBuffer_;
 }
 

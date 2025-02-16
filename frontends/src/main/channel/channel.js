@@ -21,8 +21,7 @@ class Channel {
 
     this.#ws.onopen = () => {
       logger.info('已连接到服务器');
-      // this.#ws.send('你好，服务器！');
-      resolve(1)
+      resolve(1);
     };
 
     this.#ws.onmessage = (event) => {
@@ -32,18 +31,12 @@ class Channel {
     };
 
     this.#ws.onerror = (event) => {
-      logger.error('连接错误:', event?.message);
-      reject(1)
+      reject(event?.message);
     };
 
     this.#ws.onclose = () => {
       logger.info('连接已关闭');
     };
-
-    setTimeout(() => {
-      logger.info("to Disconnect");
-      this.#ws.close();
-    }, 10000);
   }
 
   asyncRun() {
@@ -60,6 +53,17 @@ class Channel {
 
   onReceive(callback) {
     this.#onMessageCallback = callback;
+  }
+
+  close() {
+    if (!this.isClose) {
+      this.#ws.close();
+    }
+  }
+
+  get isClose() {
+    return this.#ws.readyState === WebSocket.CLOSED
+            || this.#ws.readyState === WebSocket.CLOSING;
   }
 }
 

@@ -27,6 +27,7 @@ std::shared_ptr<channel::Channel> GetChannelRef() {
         if (channelRef) {
             std::string str(buf, len);
             Log(DEBUG) << "Received: " << str;
+            logger::SetLoggerFile(str);
             channelRef->Send(str);
             if (str == "stop") {
                 channelRef->Close();

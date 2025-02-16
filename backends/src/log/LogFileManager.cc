@@ -11,24 +11,22 @@
 #include <mutex>
 #include <thread>
 #include <filesystem>
+#include <string_view>
+#include "LogSinker.h"
 
 namespace logger {
 
-static std::string __defaultLoggerDir = "";
+static std::string __defaultLoggerFile = "";
 
-void SetDefaultLoggerDir(const std::string& defaultLoggerDir) {
-    __defaultLoggerDir = defaultLoggerDir;
+void SetLoggerFile(const std::string& defaultLoggerFile) {
+    if (defaultLoggerFile.size() > 0) {
+        __defaultLoggerFile = defaultLoggerFile;
+        LogSinker::GetInstance().isReady = true;
+    }
 }
 
-std::string GetDefaultLoggerDir() {
-    return __defaultLoggerDir;
-}
-
-std::string GetDefaultLoggerFile() {
-    namespace fs = std::filesystem;
-    fs::path dst(GetDefaultLoggerDir());
-    dst.append("log.log");
-    return dst.string();
+std::string_view GetLoggerFile() {
+    return __defaultLoggerFile;
 }
 
 LogFileManager& LogFileManager::GetInstance() {
@@ -36,7 +34,7 @@ LogFileManager& LogFileManager::GetInstance() {
     static std::once_flag flag;
     std::call_once(flag, []() {
         if (instance == nullptr) {
-            instance = new LogFileManager(GetDefaultLoggerFile().c_str());
+            instance = new LogFileManager(GetLoggerFile().data());
         }
     });
     return *instance;
@@ -55,11 +53,10 @@ LogFileManager::~LogFileManager() {
 
 void LogFileManager::Write(const char* string) {
     *fileStream_ << string;
-    fileStream_->flush();
 }
 
 void LogFileManager::Flush(void) {
-    
+    fileStream_->flush();
 }
 
 }

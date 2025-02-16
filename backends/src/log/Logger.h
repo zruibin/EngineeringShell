@@ -18,9 +18,7 @@
 
 namespace logger {
 
-extern void SetDefaultLoggerDir(const std::string& defaultLoggerDir);
-extern std::string GetDefaultLoggerDir();
-extern std::string GetDefaultLoggerFile();
+extern void SetLoggerFile(const std::string& defaultLoggerFile);
 
 enum LoggingSeverity {
     NONE,
