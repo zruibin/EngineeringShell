@@ -1,40 +1,20 @@
-// Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const url = require('url');
 const logger = require('./log');
-const channel = require("./channel/channel");
+const channel = require('./channel/channel');
+const runSubPrograms = require('./subPrograms');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+const appPath = app.getAppPath();
 let mainWindow = null;
 
-// Keep a reference for dev mode
 let dev = false;
-
-// Broken:
-// if (process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath)) {
-//   dev = true
-// }
-
 if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
   dev = true;
 }
 
-function createWindow() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
-    show: false,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
-    }
-  });
-
-  // and load the index.html of the app.
+function createIndexPath() {
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
     indexPath = url.format({
@@ -44,20 +24,35 @@ function createWindow() {
       slashes: true
     });
   } else {
-    const appPath = app.getAppPath();
-    let filePath = path.join(appPath, 'dist/renderer/', 'index.html');
+    const filePath = path.join(appPath, 'dist/renderer/', 'index.html');
     indexPath = url.format({
       protocol: 'file:',
       pathname: filePath,
       slashes: true
     });
   }
+  return indexPath;
+}
 
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1024,
+    height: 768,
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+  registerMainWindowEvent();
+
+  const indexPath = createIndexPath();
   mainWindow.loadURL(indexPath);
   logger.info("main.js loaded.", "indexPath:", indexPath);
+}
 
-  // Don't show until we are ready and loaded
-  mainWindow.once('ready-to-show', () => {
+function registerMainWindowEvent() {
+   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
 
     // Open the DevTools automatically if developing
@@ -65,16 +60,8 @@ function createWindow() {
       mainWindow.webContents.openDevTools();
     }
 
-    channel.onReceive(msg => {
-      logger.debug('收到服务器消息:', msg);
-    });
-    channel.asyncRun().then(code => {
-        logger.info(`asyncRun, code(${code})`);
-        channel.send(logger.filePath());
-    }).catch(error => {
-        logger.error('连接错误:', error);
-    });
-  })
+    initChannel();
+  });
 
   mainWindow.on('close', (event) => {
     logger.debug(`mainWindow close, event(${JSON.stringify(event)})`);
@@ -87,69 +74,7 @@ function createWindow() {
   });
 }
 
-function runSubProgram() {
-  logger.debug(`log path: ${ logger.filePath() }`)
-  const appPath = app.getAppPath();
-  logger.debug(`appPath: ${appPath}`);
-  let subprogramsPath;
-  if (app.isPackaged) {
-    subprogramsPath = path.join(appPath, '..', 'subprograms');
-  } else {
-    subprogramsPath = path.join(appPath, 'subprograms');
-  }
-
-  // 确定子程序的可执行文件路径
-  const platform = process.platform;
-  let subprogramExecutable;
-  const name = "Backends";
-
-  switch (platform) {
-    case 'darwin':
-      subprogramExecutable = path.join(subprogramsPath, name); // macOS 可执行文件通常无扩展名
-      break;
-    case 'win32':
-      subprogramExecutable = path.join(subprogramsPath, `${name}.ext`);
-      break;
-    case 'linux':
-      subprogramExecutable = path.join(subprogramsPath, `${name}-linux`);
-      break;
-    default:
-      console.error('Unsupported platform.');
-      return;
-  }
-
-  logger.info(`subprogramPath: ${subprogramExecutable}`);
-
-  const { execFile } = require('child_process');
-  execFile(subprogramExecutable, ['arg1', 'arg2'], (error, stdout, stderr) => {
-    if (error) {
-      logger.error(`执行子程序出错: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      logger.error(`子程序输出错误: ${stderr}`);
-      return;
-    }
-    logger.info(`子程序输出: ${stdout}`);
-  });
-}
-
-function init() {
-  runSubProgram();
-  createWindow();
-}
-
-function destory() {
-  channel.close();
-}
-
-
-const gotTheLock = app.requestSingleInstanceLock();
- 
-if (!gotTheLock) {
-  logger.error("It was not single instance then app quit.");
-  app.quit();
-} else {
+function registerAppEvent() {
   app.on('ready', () => {
     logger.info(`app ready.`);
     init();
@@ -212,5 +137,35 @@ function showExitAlert(event) {
   }
 }
 
+function initChannel() {
+  channel.onReceive(msg => {
+    logger.debug('收到服务器消息:', msg);
+  });
+  channel.asyncRun().then(code => {
+      logger.info(`asyncRun, code(${code})`);
+      channel.send(logger.filePath());
+  }).catch(error => {
+      logger.error('连接错误:', error);
+  });
+}
 
+function init() {
+  logger.debug("init.");
+  runSubPrograms();
+  createWindow();
+}
+
+function destory() {
+  logger.debug("destory.");
+  channel.close();
+}
+
+
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  logger.error("It was not single instance then app quit.");
+  app.quit();
+} else {
+  registerAppEvent();
+}
 
