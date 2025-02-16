@@ -5,6 +5,7 @@ const url = require('url');
 const logger = require('./log');
 const channel = require('./channel/channel');
 const runSubPrograms = require('./subPrograms');
+const registerCrashReport = require('./crash');
 
 const appPath = app.getAppPath();
 let mainWindow = null;
@@ -151,8 +152,9 @@ function initChannel() {
 
 function init() {
   logger.debug("init.");
-  runSubPrograms();
   createWindow();
+  registerCrashReport(mainWindow);
+  runSubPrograms();
 }
 
 function destory() {
