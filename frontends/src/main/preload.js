@@ -32,7 +32,6 @@ function getPreloadPath() {
 // 动态生成 preload 脚本内容
 const preloadContent = `
 const { contextBridge, ipcRenderer } = require('electron');
-const path = require('path');
 
 // bytenode注入问题未解决，纯前端无法使用jsc方式!!!
 // const bytenodePath = path.join("${appPath}", 'node_modules/bytenode/lib');

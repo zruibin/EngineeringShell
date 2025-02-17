@@ -44,7 +44,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false, // 建议保持禁用以增强安全性
       contextIsolation: true, // 启用上下文隔离
-      sandbox: false, // 关闭沙盒
+      sandbox: true, // 是否使用沙盒
       preload: preloadPath, // 指定预加载脚本
     }
   });
