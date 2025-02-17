@@ -180,3 +180,29 @@ ipcMain.on('get-app-version', (event) => {
 });
 
 
+/*
+<body>
+<script>
+
+const code = window.bridge.sendSync("readFileSync", "/path/dist/renderer/main.js");
+console.log("code: ", code);
+eval(code);
+
+</script>
+</body>
+*/
+
+const fs = require('fs');
+ipcMain.on('readFileSync', (event, filePath) => {
+  logger.info(`readFileSync filePath: ${filePath}`);
+  let data = '';
+  try {
+    data = fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    logger.error(`readFileSync error: ${error}`);
+  }
+  // logger.info(`readFileSync data: ${data}`);
+  event.returnValue = data;
+});
+
+
