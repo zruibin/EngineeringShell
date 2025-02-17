@@ -5,43 +5,52 @@
  * Copyright (c) 2023年 Ruibin.Chow All rights reserved.
  */
 
-var logger = console;
-var isElectron = false;
+
+let isElectron = false;
 if (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1){
   isElectron = true;
-  logger = require('electron-log');
-  logger.transports.file.level = 'debug'
-  logger.transports.file.maxSize = 1002430 // 最大不超过10M
-  logger.transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}.{ms}{scope}{text}' // 设置文件内容格式
-  let date = new Date()
-  date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
-  logger.transports.file.fileName = date + '.log' // 创建文件名格式为 '时间.log' (2023-02-01.log)
-} 
+  // console.log("appPath: ", window.bridge.getAppPath());
+  // console.log("appVersion: ", window.bridge.getAppVersion());
+}
+
+console.log(`isElectron: ${isElectron}, userAgent: ${navigator.userAgent.toLowerCase()}`);
 
 const tag = "[F][App]";
 
-module.exports = {
+export default {
   info() {
-    logger.info(`${tag}[I]`, ...arguments);
+    if (isElectron) {
+      window.bridge?.send("logger-info", `${tag}[I] ${[...arguments].join('')}`);
+    } else {
+      console.log(`${tag}[I]`, ...arguments);
+    }
   },                   
   warn() {
-    logger.warn(`${tag}[W]`, ...arguments);
+    if (isElectron) {
+      window.bridge?.send("logger-warn", `${tag}[W] ${[...arguments].join('')}`);
+    } else {
+      console.log(`${tag}[W]`, ...arguments);
+    }
   },
   error() {
-    logger.error(`${tag}[E]`, ...arguments);
+    if (isElectron) {
+      window.bridge?.send("logger-error", `${tag}[E] ${[...arguments].join('')}`);
+    } else {
+      console.log(`${tag}[E]`, ...arguments);
+    }
   },
   debug() {
     if (isElectron) {
-      logger.debug(`${tag}[D]`, ...arguments);
-      console.log(`${tag}[D]`, ...arguments);
+      window.bridge?.send("logger-debug", `${tag}[D] ${[...arguments].join('')}`);
     } else {
-      logger.log(`${tag}[D]`, ...arguments);
+      console.log(`${tag}[D]`, ...arguments);
     }
   },
   verbose() {
-    logger.verbose(`${tag}[V]`, ...arguments);
+    if (isElectron) {
+      window.bridge?.send("logger-verbose", `${tag}[V] ${[...arguments].join('')}`);
+    } else {
+      console.log(`${tag}[V]`, ...arguments);
+    }
   },
-  silly() {
-    logger.silly(`${tag}[S]`, ...arguments);
-  }
 };

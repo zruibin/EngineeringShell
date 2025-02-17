@@ -5,8 +5,15 @@
  * Copyright (c) 2023年 Ruibin.Chow All rights reserved.
  */
 
+const { app, ipcMain } = require('electron');
+const path = require('path');
 const logger = require('electron-log')
  
+logger.transports.file.resolvePath = (variables) => {
+  // 自定义路径：例如，将日志保存到用户数据目录下的 logs 文件夹
+  return path.join(app.getPath('userData'), 'logs', variables.fileName);
+};
+
 logger.transports.file.level = 'debug';
 logger.transports.file.maxSize = 1002430; // 最大不超过10M
 logger.transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}.{ms}{scope}{text}'; // 设置文件内容格式
@@ -25,6 +32,28 @@ windows: %USERPROFILE%\AppData\Roaming\<app name>\log.log
 //  const exePath = path.dirname("/Users/ruibin.chow/Desktop/") // 获取到安装目录的文件夹名称
 // 指定日志文件夹位置
 //  logger.transports.file.resolvePath = () => exePath+date+'.log'
+
+
+ipcMain.on("logger-info", (event, message) => {
+  logger.info(message);
+});
+
+ipcMain.on("logger-warn", (event, message) => {
+  logger.warn(message);
+});
+
+ipcMain.on("logger-error", (event, message) => {
+  logger.error(message);
+});
+
+ipcMain.on("logger-debug", (event, message) => {
+  logger.debug(message);
+});
+
+ipcMain.on("logger-verbose", (event, message) => {
+  logger.verbose(message);
+});
+
 
 const tag = "[F][Main]";
 
@@ -51,5 +80,7 @@ module.exports = {
 
   filePath() {
     return logger.transports.file?.getFile()?.path ?? '';
-  }
+  },
 };
+
+

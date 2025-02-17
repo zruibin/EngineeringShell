@@ -6,6 +6,7 @@ const logger = require('./log');
 const channel = require('./channel/channel');
 const runSubPrograms = require('./subPrograms');
 const registerCrashReport = require('./crash');
+const { preloadPath, deletePreload } = require('./preload');
 
 const appPath = app.getAppPath();
 let mainWindow = null;
@@ -41,8 +42,10 @@ function createWindow() {
     height: 768,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false, // 建议保持禁用以增强安全性
+      contextIsolation: true, // 启用上下文隔离
+      sandbox: false, // 关闭沙盒
+      preload: preloadPath, // 指定预加载脚本
     }
   });
   registerMainWindowEvent();
@@ -160,6 +163,7 @@ function init() {
 function destory() {
   logger.debug("destory.");
   channel.close();
+  deletePreload();
 }
 
 
@@ -170,4 +174,9 @@ if (!gotTheLock) {
 } else {
   registerAppEvent();
 }
+
+ipcMain.on('get-app-version', (event) => {
+  event.returnValue = app.getVersion();
+});
+
 

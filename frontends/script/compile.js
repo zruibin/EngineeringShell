@@ -46,11 +46,12 @@ require('./main.jsc');
     <meta charset="utf-8">
     <title>${packageJson?.productName}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script defer="defer" src="main.js">
 </head>
 <body>
 <script>
-    require('bytenode');
-    require('./main.jsc');
+  // 纯前端隔离方法无法使用jsc
+  // window.bridge.loadByteFile('./main.jsc');
 </script>
 </body></html>
 `;

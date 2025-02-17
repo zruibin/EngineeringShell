@@ -4,6 +4,9 @@
 
 ```
 npm install
+
+# 重新安装依赖并强制编译
+npm install --force --build-from-source
 ```
 
 ### Usage

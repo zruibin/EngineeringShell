@@ -58,13 +58,21 @@ module.exports = (mode) => {
         }
       ]
     },
-    target: 'electron-renderer',
+    target: 'web',
     entry: appPath + '/index',
     output: isProduction ? {
       path:path.join(__dirname,'./dist/renderer/'),
       filename:'[name].js',
       clean: true,
     } : {},
+    node: {
+      __dirname: false, // 保留真实路径
+      __filename: false
+    },
+    externals: {
+      // 排除Node.js原生模块
+      bytenode: 'commonjs bytenode'
+    },
     plugins: isProduction ? plugins : pluginsDev,
     devtool: isProduction ? 'source-map':'inline-source-map',
     devServer: isProduction ? {} : {

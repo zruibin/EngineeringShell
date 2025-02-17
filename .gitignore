@@ -33,6 +33,7 @@ builddeps.log
 node_modules
 package-lock.json
 dist/
+dynamic_preload.js
 
 CMakeLists.txt.user
 #svn文件夹忽略

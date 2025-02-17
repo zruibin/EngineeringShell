@@ -5,9 +5,9 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-let fs = require('fs');
-let path = require('path')
-let fsExtra = require("fs-extra");
+const fs = require('fs');
+const path = require('path')
+const fsExtra = require("fs-extra");
 
 const parentDir = path.dirname(__dirname);
 let removeList = [
