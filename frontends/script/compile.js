@@ -104,9 +104,12 @@ require('./main.jsc');
       packageJson.main = newMainEntry;
       console.log(`package.json已更新，main字段设置为: ${newMainEntry}`);
     }
-    if (isUsingCryption && packageJson.build?.files) {
+
+    const excludeFile = `!${inputPath}`;
+    if (isUsingCryption && packageJson.build?.files && 
+        !packageJson.build.files.includes(excludeFile)) {
       wirte = true;
-      packageJson.build.files.push(path.join(`!${inputPath}`));
+      packageJson.build.files.push(path.join(excludeFile));
       console.log(`package.json已更新，build.files字段设置为: ${JSON.stringify(packageJson.build.files)}`);
     }
     if (wirte) {

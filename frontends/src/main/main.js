@@ -7,6 +7,7 @@ const channel = require('./channel/channel');
 const runSubPrograms = require('./subPrograms');
 const registerCrashReport = require('./crash');
 const { preloadPath, deletePreload } = require('./preload');
+const ipcManager = require('./manager/IPCManager');
 
 const appPath = app.getAppPath();
 let mainWindow = null;
@@ -155,6 +156,7 @@ function initChannel() {
 
 function init() {
   logger.debug("init.");
+  ipcManager.registerAllChannel();
   createWindow();
   registerCrashReport(mainWindow);
   runSubPrograms();
@@ -162,6 +164,7 @@ function init() {
 
 function destory() {
   logger.debug("destory.");
+  ipcManager.unRegisterAllChannel();
   channel.close();
   deletePreload();
 }
@@ -175,54 +178,5 @@ if (!gotTheLock) {
   registerAppEvent();
 }
 
-ipcMain.on('get-app-version', (event) => {
-  event.returnValue = app.getVersion();
-});
-
-
-/*
-<body>
-<script>
-
-const code = window.bridge.sendSync("readFileSync", "/path/dist/renderer/main.js");
-console.log("code: ", code);
-eval(code);
-
-</script>
-</body>
-*/
-
-const fs = require('fs');
-ipcMain.on('readAppFileSync', (event, filePath) => {
-  const distPath = path.join(app.getAppPath(), filePath);
-  logger.info(`readAppFileSync filePath: ${distPath}`);
-  let data = '';
-  try {
-    data = fs.readFileSync(distPath, 'utf8');
-  } catch (error) {
-    logger.error(`readAppFileSync error: ${error}`);
-  }
-  event.returnValue = data;
-});
-
-const cryption = require('../../script/cryption');
-ipcMain.on('cryption.encrypt', (event, content) => {
-  let encrypted = '';
-  try {
-    encrypted = cryption.encrypt(content);
-  } catch (error) {
-    logger.error(`cryption.encrypt error: ${error}`);
-  }
-  event.returnValue = encrypted;
-});
-ipcMain.on('cryption.decrypt', (event, content) => {
-  let decrypted = '';
-  try {
-    decrypted = cryption.decrypt(content);
-  } catch (error) {
-    logger.error(`cryption.decrypt error: ${error}`);
-  }
-  event.returnValue = decrypted;
-});
 
 
