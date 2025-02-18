@@ -48,6 +48,7 @@ contextBridge.exposeInMainWorld('bridge', {
   sendSync: (channel, data) => ipcRenderer.sendSync(channel, data),
   send: (channel, data) => ipcRenderer.send(channel, data),
   receive: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
+  invoke: (channel, ...args) => { return ipcRenderer.invoke(channel, ...args) },
 });
 `;
 

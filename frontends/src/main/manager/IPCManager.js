@@ -11,51 +11,110 @@ const path = require('path');
 const logger = require('../log');
 const cryption = require('../../../script/cryption');
 
+// 原始方法备份
+const originalHandle = ipcMain.handle;
+const originalOn = ipcMain.on;
 
-// 事件注册表（维护所有已注册的合法事件）
-const ipcRegistry = new Map();
-
-// 中间件核心逻辑
-const ipcMiddleware = (channel, handler) => {
-  // 注册合法事件
-  ipcRegistry.set(channel, true);
-  
-  // 返回包装后的处理器
-  return async (event, ...args) => {
-    try {
-      // 前置钩子（权限校验）
-      // if (!validateSender(event.sender)) {
-      //   return event.reply('error', '非法来源');
-      // }
-
-      // 执行原始处理器
-      const result = await handler(event, ...args);
-      
-      // 后置钩子（日志记录）
-      logger.info(`IPC成功: ${channel}`);
-      
-      return result;
-    } catch (error) {
-      // 错误处理
-      event.reply('error', error.message);
-      logger.error(error);
-    }
-  }
+// 注册表维护
+const ipcRegistry = {
+  handlers: new Map(), // handle 注册表
+  listeners: new Map() // on 注册表
 }
 
+// 封装 ipcMain.handle
+ipcMain.handle = function(channel, handler) {
+  registerHandler(channel, handler);
+  return originalHandle.call(ipcMain, channel, async (event, ...args) => {
+    try {
+      // 前置通用逻辑
+      validateChannel(channel);
+      logCall('handle', channel, args);
+      
+      // 执行原始处理器
+      return await handler(event, ...args);
+    } catch (error) {
+      handleError(error, event, channel);
+      return {msg: error.message, code: -1};
+    }
+  });
+}
+
+// 封装 ipcMain.on
+ipcMain.on = function(channel, listener) {
+  registerListener(channel, listener);
+  return originalOn.call(ipcMain, channel, (event, ...args) => {
+    try {
+      // 前置通用逻辑
+      validateChannel(channel);
+      logCall('on', channel, args);
+      
+      // 执行原始监听器
+      return listener(event, ...args);
+    } catch (error) {
+      handleError(error, event, channel);
+      return error;
+    }
+  });
+}
+
+// ========== 工具函数 ==========
+function registerHandler(channel, handler) {
+  ipcRegistry.handlers.set(channel, {
+    handler,
+    callCount: 0,
+    lastCalled: Date.now()
+  })
+}
+
+function registerListener(channel, listener) {
+  ipcRegistry.listeners.set(channel, {
+    listener,
+    callCount: 0,
+    lastCalled: Date.now()
+  })
+}
+
+function validateChannel(channel) {
+  // const allowedChannels = ['app:quit', 'file:read']
+  // if (!allowedChannels.includes(channel)) {
+  //   throw new Error(`非法 IPC 通道: ${channel}`)
+  // }
+}
+
+function logCall(type, channel, args) {
+  logger.info(`[IPC] ${type.toUpperCase()} ${channel}`, args)
+}
+
+function handleError(error, event, channel) {
+  logger.error(`[IPC Error] ${channel}:`, error);
+  // event.sender.send('ipc-error', {
+  //   channel,
+  //   message: error.message
+  // })
+}
+
+/******************************************************************************/
+
 function registerChannel(channel, callback) {
-  if (!channel || `${channel}`.length == 0) {
-    
-  }
-  ipcMain.on(channel, ipcMiddleware(channel, callback));
+  ipcMain.on(channel, callback);
 }
 
 function unRegisterChannel(channel) {
-  if (ipcRegistry.has(channel)) {
-    ipcMain.removeAllListeners(channel);
-    ipcRegistry.delete(channel);
+  if (ipcRegistry.listeners.has(channel)) {
+    ipcRegistry.listeners.delete(channel);
   }
 }
+
+// function registerHandler(channel, callback) {
+//   ipcMain.handle(channel, callback);
+// }
+
+// function unRegisterHandler(channel) {
+//   if (ipcRegistry.handlers.has(channel)) {
+//     ipcMain.removeHandler(channel);
+//     ipcRegistry.handlers.delete(channel);
+//   }
+// }
 
 function registerAllChannel() {
   registerChannel('get-app-version', (event) => {
@@ -94,6 +153,12 @@ function registerAllChannel() {
     event.returnValue = decrypted;
   });
 
+  ipcMain.handle('invoke.test', async (event, content) => {
+    logger.debug(`receive handler: ${content}`);
+    return Promise.reject(new Error('API请求失败')); // ⚡️ 触发 catch
+    // return content;
+  });
+
   // 通配符监听器（必须最后注册）???
   // ipcMain.on('*', (event, channel, ...args) => {
   //   logger.debug(`处理channel: ${channel}`);
@@ -105,7 +170,7 @@ function registerAllChannel() {
 }
 
 function unRegisterAllChannel() {
-  for(const [key, _] of ipcRegistry) {
+  for(const [key, _] of ipcRegistry.listeners) {
     unRegisterChannel(key);
   }
 }

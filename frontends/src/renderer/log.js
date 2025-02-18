@@ -10,7 +10,11 @@ let isElectron = false;
 if (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1){
   isElectron = true;
   // console.log("appPath: ", window.bridge.getAppPath());
-  // console.log("appVersion: ", window.bridge.getAppVersion());
+  // window.bridge?.send("logger-info", window.bridge.getAppVersion());
+  // window.bridge?.send("ban", `3333`);
+  // window.bridge?.invoke("invoke.test", "1122334").then((data) => {
+  //   window.bridge?.send("logger-info",`log invoke.test -> ${JSON.stringify(data)}`);
+  // });
 }
 
 console.log(`isElectron: ${isElectron}, userAgent: ${navigator.userAgent.toLowerCase()}`);
