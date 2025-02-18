@@ -193,16 +193,36 @@ eval(code);
 */
 
 const fs = require('fs');
-ipcMain.on('readFileSync', (event, filePath) => {
-  logger.info(`readFileSync filePath: ${filePath}`);
+ipcMain.on('readAppFileSync', (event, filePath) => {
+  const distPath = path.join(app.getAppPath(), filePath);
+  logger.info(`readAppFileSync filePath: ${distPath}`);
   let data = '';
   try {
-    data = fs.readFileSync(filePath, 'utf8');
+    data = fs.readFileSync(distPath, 'utf8');
   } catch (error) {
-    logger.error(`readFileSync error: ${error}`);
+    logger.error(`readAppFileSync error: ${error}`);
   }
-  // logger.info(`readFileSync data: ${data}`);
   event.returnValue = data;
+});
+
+const cryption = require('../../script/cryption');
+ipcMain.on('cryption.encrypt', (event, content) => {
+  let encrypted = '';
+  try {
+    encrypted = cryption.encrypt(content);
+  } catch (error) {
+    logger.error(`cryption.encrypt error: ${error}`);
+  }
+  event.returnValue = encrypted;
+});
+ipcMain.on('cryption.decrypt', (event, content) => {
+  let decrypted = '';
+  try {
+    decrypted = cryption.decrypt(content);
+  } catch (error) {
+    logger.error(`cryption.decrypt error: ${error}`);
+  }
+  event.returnValue = decrypted;
 });
 
 

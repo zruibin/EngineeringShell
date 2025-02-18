@@ -7,6 +7,25 @@
 
 const fs = require('fs-extra');
 const path = require("path");
+const cryption = require('./cryption');
+
+const isUsingCryption = true;
+
+const distPath = 'dist/renderer/';
+const fileName = 'main.js';
+const encryptFileName = 'main.ejs';
+const inputPath = path.join(distPath, fileName);
+const outputPath = path.join(distPath, encryptFileName);
+
+function encryptFile() {
+  try {
+    const data = fs.readFileSync(inputPath, 'utf8');
+    const encryptData = cryption.encrypt(data);
+    fs.writeFileSync(outputPath, encryptData);
+  } catch (error) {
+    console.error("encryptFile error:", error);
+  }
+}
 
 async function complieFunction() {
   const packageJsonName = "package.json";
@@ -36,9 +55,20 @@ require('./main.jsc');
     }
   });
 
+  if (isUsingCryption) {
+    encryptFile();
+  }
+
   // 修改dist/renderer/index.html
   const indexEntry = "dist/renderer/index.html";
   const indexPath = path.join(parentDir, indexEntry);
+
+  const originCode = `<script defer="defer" src="./${fileName}" />`;
+  const encryptCode = `
+      const encryptCode = window.bridge.sendSync("readAppFileSync", "${outputPath}");
+      const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
+      eval(code);`;
+
   const indexContent = `
 <!doctype html>
 <html>
@@ -46,12 +76,13 @@ require('./main.jsc');
     <meta charset="utf-8">
     <title>${packageJson?.productName}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script defer="defer" src="main.js">
+    ${ isUsingCryption ? '' : originCode }
 </head>
 <body>
 <script>
   // 纯前端隔离方法无法使用jsc
   // window.bridge.loadByteFile('./main.jsc');
+  ${ isUsingCryption ? encryptCode : '' }
 </script>
 </body></html>
 `;
@@ -67,10 +98,19 @@ require('./main.jsc');
   // 修改package.json中main入口
   const newMainEntry = "dist/main/boot.js";
   try {
+    let wirte = false;
     if (packageJson.main !== newMainEntry) {
+      wirte = true;
       packageJson.main = newMainEntry;
+      console.log(`package.json已更新，main字段设置为: ${newMainEntry}`);
+    }
+    if (isUsingCryption && packageJson.build?.files) {
+      wirte = true;
+      packageJson.build.files.push(path.join(`!${inputPath}`));
+      console.log(`package.json已更新，build.files字段设置为: ${JSON.stringify(packageJson.build.files)}`);
+    }
+    if (wirte) {
       await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
-      console.log(`package.json 已更新，main 字段设置为: ${newMainEntry}`);
     }
   } catch (error) {
     console.error("更新 package.json 失败:", error);
