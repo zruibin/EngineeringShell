@@ -5,7 +5,7 @@
       "name": "Debug via npm start",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/frontends",  // 指定工作目录
+      "cwd": "${workspaceFolder}/frontends-js",  // 指定工作目录
       "runtimeExecutable": "npm",
       "windows": {
         "runtimeExecutable": "npm.cmd"
