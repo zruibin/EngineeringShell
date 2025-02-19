@@ -10,9 +10,7 @@ const path = require('path');
 const logger = require('./log');
 
 function runSubPrograms() {
-  logger.debug(`log path: ${ logger.filePath() }`)
   const appPath = app.getAppPath();
-  logger.debug(`appPath: ${appPath}`);
   let subprogramsPath;
   if (app.isPackaged) {
     subprogramsPath = path.join(appPath, '..', 'subprograms');
@@ -30,7 +28,7 @@ function runSubPrograms() {
       subprogramExecutable = path.join(subprogramsPath, name); // macOS 可执行文件通常无扩展名
       break;
     case 'win32':
-      subprogramExecutable = path.join(subprogramsPath, `${name}.ext`);
+      subprogramExecutable = path.join(subprogramsPath, `${name}.exe`);
       break;
     case 'linux':
       subprogramExecutable = path.join(subprogramsPath, `${name}-linux`);
@@ -39,6 +37,20 @@ function runSubPrograms() {
       console.error('Unsupported platform.');
       return;
   }
+
+  logger.info(`subprogramPath: ${subprogramExecutable}`);
+  const { execFile } = require('child_process');
+  execFile(subprogramExecutable, ['arg1', 'arg2'], (error, stdout, stderr) => {
+    if (error) {
+      logger.error(`执行子程序出错: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      logger.error(`子程序输出错误: ${stderr}`);
+      return;
+    }
+    logger.debug(`子程序输出: ${stdout}`);
+  });
 }
 
 module.exports = runSubPrograms;

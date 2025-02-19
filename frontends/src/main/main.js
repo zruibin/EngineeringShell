@@ -156,7 +156,7 @@ function initChannel() {
 
 function init() {
   logger.debug("init.");
-  ipcManager.registerAllChannel();
+  ipcManager.registerAll();
   createWindow();
   registerCrashReport(mainWindow);
   runSubPrograms();
@@ -164,7 +164,7 @@ function init() {
 
 function destory() {
   logger.debug("destory.");
-  ipcManager.unRegisterAllChannel();
+  ipcManager.unRegisterAll();
   channel.close();
   deletePreload();
 }

@@ -23,12 +23,17 @@ const ipcRegistry = {
 
 // 封装 ipcMain.handle
 ipcMain.handle = function(channel, handler) {
-  registerHandler(channel, handler);
+  logger.debug(`registerHandler: ${channel}`);
+  ipcRegistry.handlers.set(channel, {
+    handler,
+    callCount: 0,
+    lastCalled: Date.now()
+  });
   return originalHandle.call(ipcMain, channel, async (event, ...args) => {
     try {
       // 前置通用逻辑
       validateChannel(channel);
-      logCall('handle', channel, args);
+      // logCall('handle', channel, args);
       
       // 执行原始处理器
       return await handler(event, ...args);
@@ -41,12 +46,17 @@ ipcMain.handle = function(channel, handler) {
 
 // 封装 ipcMain.on
 ipcMain.on = function(channel, listener) {
-  registerListener(channel, listener);
+  logger.debug(`registerListener: ${channel}`);
+  ipcRegistry.listeners.set(channel, {
+    listener,
+    callCount: 0,
+    lastCalled: Date.now()
+  });
   return originalOn.call(ipcMain, channel, (event, ...args) => {
     try {
       // 前置通用逻辑
       validateChannel(channel);
-      logCall('on', channel, args);
+      // logCall('on', channel, args);
       
       // 执行原始监听器
       return listener(event, ...args);
@@ -57,23 +67,6 @@ ipcMain.on = function(channel, listener) {
   });
 }
 
-// ========== 工具函数 ==========
-function registerHandler(channel, handler) {
-  ipcRegistry.handlers.set(channel, {
-    handler,
-    callCount: 0,
-    lastCalled: Date.now()
-  })
-}
-
-function registerListener(channel, listener) {
-  ipcRegistry.listeners.set(channel, {
-    listener,
-    callCount: 0,
-    lastCalled: Date.now()
-  })
-}
-
 function validateChannel(channel) {
   // const allowedChannels = ['app:quit', 'file:read']
   // if (!allowedChannels.includes(channel)) {
@@ -82,7 +75,7 @@ function validateChannel(channel) {
 }
 
 function logCall(type, channel, args) {
-  logger.info(`[IPC] ${type.toUpperCase()} ${channel}`, args)
+  logger.info(`[IPC] ${type.toUpperCase()} ${channel}`);
 }
 
 function handleError(error, event, channel) {
@@ -95,33 +88,41 @@ function handleError(error, event, channel) {
 
 /******************************************************************************/
 
-function registerChannel(channel, callback) {
-  ipcMain.on(channel, callback);
+function registerListener(channel, listener) {
+  if (!ipcRegistry.listeners.has(channel)) {
+    ipcMain.on(channel, listener);
+  }
 }
 
-function unRegisterChannel(channel) {
+function unRegisterListener(channel) {
   if (ipcRegistry.listeners.has(channel)) {
+    const listener = ipcRegistry.listeners.get(channel).listener;
+    logger.debug(`removeListener: ${channel}`);
+    ipcMain.removeListener(channel, listener);
     ipcRegistry.listeners.delete(channel);
   }
 }
 
-// function registerHandler(channel, callback) {
-//   ipcMain.handle(channel, callback);
-// }
+function registerHandler(channel, handler) {
+  if (!ipcRegistry.handlers.has(channel)) {
+    ipcMain.handle(channel, handler);
+  }
+}
 
-// function unRegisterHandler(channel) {
-//   if (ipcRegistry.handlers.has(channel)) {
-//     ipcMain.removeHandler(channel);
-//     ipcRegistry.handlers.delete(channel);
-//   }
-// }
+function unRegisterHandler(channel) {
+  if (ipcRegistry.handlers.has(channel)) {
+    ipcMain.removeHandler(channel);
+    ipcRegistry.handlers.delete(channel);
+  }
+}
 
-function registerAllChannel() {
-  registerChannel('get-app-version', (event) => {
+
+function registerAll() {
+  registerListener('get-app-version', (event) => {
     event.returnValue = app.getVersion();
   });
 
-  registerChannel('readAppFileSync', (event, filePath) => {
+  registerListener('readAppFileSync', (event, filePath) => {
     const distPath = path.join(app.getAppPath(), filePath);
     logger.info(`readAppFileSync filePath: ${distPath}`);
     let data = '';
@@ -133,7 +134,27 @@ function registerAllChannel() {
     event.returnValue = data;
   });
 
-  registerChannel('cryption.encrypt', (event, content) => {
+  registerListener("logger.info", (event, message) => {
+    logger.i(message);
+  });
+
+  registerListener("logger.warn", (event, message) => {
+    logger.w(message);
+  });
+
+  registerListener("logger.error", (event, message) => {
+    logger.e(message);
+  });
+
+  registerListener("logger.debug", (event, message) => {
+    logger.d(message);
+  });
+
+  registerListener("logger.verbose", (event, message) => {
+    logger.v(message);
+  });
+
+  registerListener('cryption.encrypt', (event, content) => {
     let encrypted = '';
     try {
       encrypted = cryption.encrypt(content);
@@ -143,7 +164,7 @@ function registerAllChannel() {
     event.returnValue = encrypted;
   });
 
-  registerChannel('cryption.decrypt', (event, content) => {
+  registerListener('cryption.decrypt', (event, content) => {
     let decrypted = '';
     try {
       decrypted = cryption.decrypt(content);
@@ -153,33 +174,29 @@ function registerAllChannel() {
     event.returnValue = decrypted;
   });
 
-  ipcMain.handle('invoke.test', async (event, content) => {
+  registerHandler('invoke.test', async (event, content) => {
     logger.debug(`receive handler: ${content}`);
     return Promise.reject(new Error('API请求失败')); // ⚡️ 触发 catch
     // return content;
   });
-
-  // 通配符监听器（必须最后注册）???
-  // ipcMain.on('*', (event, channel, ...args) => {
-  //   logger.debug(`处理channel: ${channel}`);
-  //   if (!ipcRegistry.has(channel)) {
-  //     event.reply('error', `未注册的IPC通道: ${channel}`)
-  //     event.preventDefault() // 阻止默认处理
-  //   }
-  // });
 }
 
-function unRegisterAllChannel() {
+function unRegisterAll() {
   for(const [key, _] of ipcRegistry.listeners) {
-    unRegisterChannel(key);
+    unRegisterListener(key);
+  }
+  for(const [key, _] of ipcRegistry.handlers) {
+    unRegisterHandler(key);
   }
 }
 
 module.exports = {
-  registerChannel,
-  unRegisterChannel,
-  registerAllChannel,
-  unRegisterAllChannel,
+  registerListener,
+  unRegisterListener,
+  registerHandler,
+  unRegisterHandler,
+  registerAll,
+  unRegisterAll,
 };
 
 

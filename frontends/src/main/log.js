@@ -21,6 +21,8 @@ let date = new Date();
 date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 logger.transports.file.fileName = date + '.log'; // 创建文件名格式为 '时间.log' (2023-02-01.log)
 
+logger.info("-------------------------------------------------------------------------------");
+
 /*
 Linux: ~/.config/<app name>/log.log
 mac: ~/Library/Logs/<app name>/log.log
@@ -32,28 +34,7 @@ windows: %USERPROFILE%\AppData\Roaming\<app name>\log.log
 //  const exePath = path.dirname("/Users/ruibin.chow/Desktop/") // 获取到安装目录的文件夹名称
 // 指定日志文件夹位置
 //  logger.transports.file.resolvePath = () => exePath+date+'.log'
-
-
-ipcMain.on("logger-info", (event, message) => {
-  logger.info(message);
-});
-
-ipcMain.on("logger-warn", (event, message) => {
-  logger.warn(message);
-});
-
-ipcMain.on("logger-error", (event, message) => {
-  logger.error(message);
-});
-
-ipcMain.on("logger-debug", (event, message) => {
-  logger.debug(message);
-});
-
-ipcMain.on("logger-verbose", (event, message) => {
-  logger.verbose(message);
-});
-
+logger.debug(`log path: ${ logger.transports.file?.getFile()?.path ?? '' }`)
 
 const tag = "[F][Main]";
 
@@ -80,6 +61,25 @@ module.exports = {
 
   filePath() {
     return logger.transports.file?.getFile()?.path ?? '';
+  },
+
+  i() {
+    logger.info(...arguments);
+  },                   
+  w() {
+    logger.warn(...arguments);
+  },
+  e() {
+    logger.error(...arguments);
+  },
+  d() {
+    logger.debug(...arguments);
+  },
+  v() {
+    logger.verbose(...arguments);
+  },
+  s() {
+    logger.silly(...arguments);
   },
 };
 
