@@ -35,6 +35,15 @@ npm run package
 npm run dist
 ```
 
+### 审查依赖
+
+* 使用工具如depcheck来检查未使用的依赖。
+
+```
+npm install -g depcheck
+# 项目根目录运行depcheck，它会列出可能未被使用的依赖，可根据结果谨慎移除
+```
+
 ### .npmrc
 
 ```

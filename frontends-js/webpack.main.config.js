@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const path = require('path')
 const TerserPlugin = require("terser-webpack-plugin");
+const nodeExternals = require('webpack-node-externals');
 // const ChangeMainPlugin = require('./plugin/ChangeMainPlugin');
 
 const pluginsDev = [
@@ -30,6 +31,7 @@ module.exports = (mode) => {
       filename:'[name].js',
       clean: true,
     },
+    externals: [nodeExternals()],
     plugins: isProduction ? plugins : pluginsDev,
     devtool: isProduction ? 'source-map':'inline-source-map',
   
