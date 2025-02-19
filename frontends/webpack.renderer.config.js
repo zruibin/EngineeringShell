@@ -89,7 +89,7 @@ module.exports = (mode) => {
       setupMiddlewares(middlewares) {
         spawn(
           'electron',
-          ['.'],
+          ['--trace-warnings', '.'],
           { shell: true, env: process.env, stdio: 'inherit' }
         )
         .on('close', code => process.exit(0))

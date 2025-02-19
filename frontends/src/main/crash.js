@@ -27,17 +27,12 @@ function getCrashesDir() {
 const crashDumpsDir = app.getPath('crashDumps'); // 直接获取崩溃目录
 logger.info(`崩溃文件目录: ${crashDumpsDir}, getCrashesDir: ${getCrashesDir()}`);
 
-function registerCrashReport(window) {
+function registerCrashReport() {
   crashReporter.start({
     submitURL: '', // 留空则不自动上传
     uploadToServer: false,
     extra: { version: app.getVersion() },
     ignoreSystemCrashHandler: true // 禁用系统默认崩溃处理
-  });
-
-  window.webContents.on('render-process-gone', (event, details) => {
-    logger.error('渲染进程崩溃:', details);
-    // 可在此处重启窗口或提示用户
   });
 
   // GPU进程崩溃

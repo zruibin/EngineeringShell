@@ -8,6 +8,7 @@
 const { app } = require('electron');
 const path = require('path');
 const logger = require('./log');
+const env = require('./env');
 
 function runSubPrograms() {
   const appPath = app.getAppPath();
@@ -16,6 +17,10 @@ function runSubPrograms() {
     subprogramsPath = path.join(appPath, '..', 'subprograms');
   } else {
     subprogramsPath = path.join(appPath, 'subprograms');
+  }
+
+  if (env.isDev()) {
+    subprogramsPath = path.join(appPath, '..', 'backends/install/bin');
   }
 
   // 确定子程序的可执行文件路径

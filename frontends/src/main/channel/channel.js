@@ -56,14 +56,14 @@ class Channel {
   }
 
   close() {
-    if (!this.isClose) {
+    if (this.#ws && !this.isClose) {
       this.#ws.close();
     }
   }
 
   get isClose() {
-    return this.#ws.readyState === WebSocket.CLOSED
-            || this.#ws.readyState === WebSocket.CLOSING;
+    return this.#ws?.readyState === WebSocket.CLOSED
+            || this.#ws?.readyState === WebSocket.CLOSING;
   }
 }
 

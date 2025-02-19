@@ -10,17 +10,13 @@ const fs = require('fs');
 const fsExtra = require("fs-extra");
 const path = require('path');
 const logger = require('./log');
+const env = require('./env');
 
 const appPath = app.getAppPath();
 
 function getPreloadPath() {
-  let dev = false;
-  if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
-    dev = true;
-  }
-
   let preloadPath = null;
-  if (dev) {
+  if (env.isDev()) {
     preloadPath = path.join(__dirname, 'dynamic_preload.js');
   } else {
     const userData = app.getPath('userData');
