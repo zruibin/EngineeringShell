@@ -5,7 +5,7 @@ import log from 'electron-log';
 
 // 通用日志配置
 const configureLogger = () => {
-  log.transports.file.level = 'info';
+  log.transports.file.level = 'debug';
   log.transports.console.level = 'debug';
   
   log.transports.file.resolvePathFn = (variables: any) => {
@@ -31,20 +31,20 @@ export default  {
   info: (...args: any[]) => {
     logger.info(`${tag}[I]`, ...args);
   },                   
-  warn() {
-    logger.warn(`${tag}[W]`, ...arguments);
+  warn: (...args: any[]) => {
+    logger.warn(`${tag}[W]`, ...args);
   },
-  error() {
-    logger.error(`${tag}[E]`, ...arguments);
+  error: (...args: any[]) => {
+    logger.error(`${tag}[E]`, ...args);
   },
-  debug() {
-    logger.debug(`${tag}[D]`, ...arguments);
+  debug: (...args: any[]) => {
+    logger.debug(`${tag}[D]`, ...args);
   },
-  verbose() {
-    logger.verbose(`${tag}[V]`, ...arguments);
+  verbose: (...args: any[]) => {
+    logger.verbose(`${tag}[V]`, ...args);
   },
-  silly() {
-    logger.silly(`${tag}[S]`, ...arguments);
+  silly: (...args: any[]) => {
+    logger.silly(`${tag}[S]`, ...args);
   }
 };
 
