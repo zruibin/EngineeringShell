@@ -8,21 +8,23 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import electronReload from 'electron-reload';
+import logger from './log';
 
 const appPath = app.getAppPath();
 
 // 热重载配置
 if (process.env.NODE_ENV === 'development') {
-  // path.join(appPath, 'dist')
-  electronReload(__dirname, {
+  // 注释掉electronReload即可以关闭主进程刷新
+  /*
+  electronReload(path.join(appPath, 'dist'), {
     electron: path.join(appPath, 'node_modules/.bin/electron'),
-    // hardResetMethod: 'exit',
-    // // 核心延时配置
-    // awaitWriteFinish: {
-    //   stabilityThreshold: 1000, // 文件稳定时间
-    //   pollInterval: 100         // 检查间隔
-    // }
+    // 核心延时配置
+    awaitWriteFinish: {
+      stabilityThreshold: 2000, // 文件稳定时间
+      pollInterval: 500         // 检查间隔
+    }
   });
+  //*/
 }
 
 let mainWindow: BrowserWindow | null;
@@ -47,6 +49,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  logger.info('create window.');
 }
 
 app.whenReady().then(createWindow);
