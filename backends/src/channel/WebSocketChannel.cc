@@ -28,21 +28,39 @@ void WebSocketChannel::Open() {
         server_.clear_access_channels(websocketpp::log::alevel::all);
         server_.clear_error_channels(websocketpp::log::alevel::all);
 
-        server_.set_open_handler([this](connection_hdl hander){
-            Log(DEBUG) << "Open.";
-            this->connectionHander_ = hander;
+        server_.set_open_handler([this](connection_hdl hdl){
+            int id = this->nextId_++;
+            SessionData data{id, hdl};
+            this->connectionsById_[id] = data;
+            this->idByHandler_[hdl] = id;
+            Log(DEBUG) << "Open, id: " << id;
             if (this->openedHander_) {
-                this->openedHander_(true);
+                this->openedHander_(id, true);
             }
         });
-        server_.set_close_handler([this](connection_hdl){
-            Log(DEBUG) << "Close";
+        server_.set_close_handler([this](connection_hdl hdl){
+            auto it = this->idByHandler_.find(hdl);
+            if (it != this->idByHandler_.end()) {
+                int id = it->second;
+                this->connectionsById_.erase(id);
+                this->idByHandler_.erase(hdl);
+                Log(DEBUG) << "Close, id: " << id;
+                if (this->closedHander_) {
+                    this->closedHander_(id, true);
+                }
+            }
             this->Close();
         });
-        server_.set_message_handler([this](websocketpp::connection_hdl hdl, message_ptr msg) {
-            if (this->receivedHandler_) {
-                const std::string &payload = msg->get_payload();
-                this->receivedHandler_(payload.data(), payload.size(), FrameType::kText);
+        server_.set_message_handler([this](connection_hdl hdl, message_ptr msg) {
+            auto it = this->idByHandler_.find(hdl);
+            if (it != this->idByHandler_.end()) {
+                int id = it->second;
+                if (this->receivedHandler_) {
+                    const std::string &payload = msg->get_payload();
+                    this->receivedHandler_(id, payload.data(),
+                                           payload.size(),
+                                           FrameType::kText);
+                }
             }
         });
     } catch (websocketpp::exception const & e) {
@@ -53,11 +71,13 @@ void WebSocketChannel::Open() {
 }
 
 void WebSocketChannel::Close() {
-    if (server_.is_listening()) {
-        server_.stop_listening();
-    }
-    if (this->closedHander_) {
-        this->closedHander_(true);
+    if (this->idByHandler_.empty()) {
+        if (server_.is_listening()) {
+            server_.stop_listening();
+        }
+        if (this->destoryHander_) {
+            this->destoryHander_(true);
+        }
     }
 }
 
@@ -76,17 +96,22 @@ void WebSocketChannel::AsyncRun() {
     }).detach();
 }
 
-void WebSocketChannel::Send(const std::string& data) {
-    this->server_.send(this->connectionHander_,
-                       data,
-                       websocketpp::frame::opcode::value::text);
+void WebSocketChannel::Send(uint16_t id, const std::string& data) {
+    auto it = this->connectionsById_.find(id);
+    if (it != this->connectionsById_.end()) {
+        connection_hdl hdl = it->second.handler;
+        this->server_.send(hdl, data,
+                           websocketpp::frame::opcode::value::text);
+    }
 }
 
-void WebSocketChannel::Send(const uint8_t* data, std::size_t size) {
-    this->server_.send(this->connectionHander_,
-                       data,
-                       size,
-                       websocketpp::frame::opcode::value::text);
+void WebSocketChannel::Send(uint16_t id, const uint8_t* data, std::size_t size) {
+    auto it = this->connectionsById_.find(id);
+    if (it != this->connectionsById_.end()) {
+        connection_hdl hdl = it->second.handler;
+        this->server_.send(hdl, data, size,
+                           websocketpp::frame::opcode::value::text);
+    }
 }
 
 }

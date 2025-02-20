@@ -15,20 +15,21 @@ namespace channel {
 
 std::shared_ptr<channel::Channel> GetChannelRef() {
     std::shared_ptr<channel::Channel> channelRef = std::make_shared<channel::WebSocketChannel>();
-    channelRef->SetClosedHander([](bool closed) {
-        if (closed) {
+    channelRef->SetDestoryHander([](bool isDestory) {
+        if (isDestory) {
             RunLoopRef ref = RunLoopGetMain();
             if (ref) ref->isExit = true;
         }
     });
-    channelRef->SetReceivedHandler([&](const char* buf,
+    channelRef->SetReceivedHandler([&](uint16_t id,
+                                       const char* buf,
                                        std::size_t len,
                                        channel::FrameType frameType) {
         if (channelRef) {
             std::string str(buf, len);
-            Log(DEBUG) << "Received: " << str;
+            Log(DEBUG) << "id: " << id << " Received: " << str;
             logger::SetLoggerFile(str);
-            channelRef->Send(str);
+            channelRef->Send(id, str);
             if (str == "stop") {
                 channelRef->Close();
             }
