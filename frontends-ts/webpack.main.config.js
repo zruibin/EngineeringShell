@@ -6,13 +6,16 @@
  */
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const WebpackShellPluginNext = require('webpack-shell-plugin-next');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  mode: isProd ? 'production' : 'development',
   target: 'electron-main',
   entry: './src/main/main.ts',
   externals: [nodeExternals()],
-  devtool: 'source-map', // 开发模式下生成 source map
+  devtool: isProd ? 'source-map' : 'eval-source-map',
   module: {
     rules: [
       {
@@ -25,6 +28,22 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
+  plugins: isProd ? [] : [
+    // 仅在初始构建完成后启动 Electron（避免 watch 模式重复启动）
+    new WebpackShellPluginNext({
+      onBuildStart: false,
+      onBuildEnd: {
+        scripts: ['electron .'], 
+        blocking: false, // 非阻塞模式（允许与渲染进程并行）
+        parallel: true,
+        // 添加安全校验：确保 main.js 存在
+        env: { 
+          CHECK_FILE: path.resolve(__dirname, 'dist/main/main.js')
+        }
+      },
+    }),
+  ],
+  watch: !isProd, // 保持监听模式
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist/main')

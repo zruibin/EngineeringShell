@@ -8,11 +8,13 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = {
-  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  mode: isProd ? 'production' : 'development',
   target: 'web',
   entry: './src/renderer/index.tsx',
-  devtool: 'inline-source-map', // 开发模式下生成 inline source map
+  devtool: isProd ? 'source-map' : 'eval-source-map',
   module: {
     rules: [
       {
