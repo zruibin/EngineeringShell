@@ -5,17 +5,27 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-const fs = require('fs-extra');
 const path = require('path');
+// 添加自定义搜索路径
+[
+  process.cwd()
+].forEach(p => {
+  module.paths.push(p);
+  module.paths.push(path.join(p, 'node_modules'));
+});
+
+const fs = require('fs-extra');
 
 async function updateMainField() {
   try {
     const packageJsonName = 'package.json';
-    const parentDir = path.dirname(__dirname);
-    const packageJsonPath = path.join(parentDir, packageJsonName);
+    const tsconfigJsonName = 'tsconfig.json';
+    const projectDir = process.cwd();
+    const packageJsonPath = path.join(projectDir, packageJsonName);
+    const tsconfigPath = path.join(projectDir, tsconfigJsonName);
     console.log(`packageJsonPath: ${packageJsonPath}`);
 
-    const mainEntry = "src/main/main.js";
+    const mainEntry = fs.existsSync(tsconfigPath) ? "dist/main/main.js" : "src/main/main.js";
     const packageJson = await fs.readJson(packageJsonPath);
 
     if (packageJson.main !== mainEntry) {

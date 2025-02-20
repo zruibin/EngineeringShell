@@ -4,10 +4,17 @@
  * Created by Ruibin.Chow on 2025/02/16.
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
+const path = require('path');
+// 添加自定义搜索路径
+[
+  process.cwd()
+].forEach(p => {
+  module.paths.push(p);
+  module.paths.push(path.join(p, 'node_modules'));
+});
 
 const fs = require('fs-extra');
-const path = require("path");
-const cryption = require('./cryption');
+const cryption = require(path.join(process.cwd(), '../frontends-common/script/cryption'));
 
 const isUsingCryption = true;
 
@@ -29,8 +36,8 @@ function encryptFile() {
 
 async function complieFunction() {
   const packageJsonName = "package.json";
-  const parentDir = path.dirname(__dirname);
-  const packageJsonPath = path.join(parentDir, packageJsonName);
+  const projectDir = process.cwd();
+  const packageJsonPath = path.join(projectDir, packageJsonName);
   console.log(`packageJsonPath: ${packageJsonPath}`);
 
   let packageJson = null;
@@ -42,7 +49,7 @@ async function complieFunction() {
 
   // 创建dist/main/boot.js
   const mainEntry = "dist/main/boot.js";
-  const bootPath = path.join(parentDir, mainEntry);
+  const bootPath = path.join(projectDir, mainEntry);
   const bootContent = `
 require('bytenode');
 require('./main.jsc');
@@ -61,7 +68,7 @@ require('./main.jsc');
 
   // 修改dist/renderer/index.html
   const indexEntry = "dist/renderer/index.html";
-  const indexPath = path.join(parentDir, indexEntry);
+  const indexPath = path.join(projectDir, indexEntry);
 
   const originCode = `<script defer="defer" src="./${fileName}" />`;
   const encryptCode = `

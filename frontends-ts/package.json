@@ -6,9 +6,10 @@
   "version": "1.0.0",
   "main": "dist/main/main.js",
   "scripts": {
-    "delete": "node script/delete.js",
+    "check": "node ../frontends-common/script/check.js",
+    "delete": "node ../frontends-common/script/delete.js",
     "start": "npm run delete && concurrently -k \"cross-env NODE_ENV=development webpack --watch --config=webpack.main.config.js\" \"cross-env NODE_ENV=development webpack serve --config=webpack.renderer.config.js\" \"wait-on http://localhost:3000 && electron .\"",
-    "compile": "bytenode -c dist/main/*.js --electron && node script/compile.js",
+    "compile": "bytenode -c dist/main/*.js --electron && node ../frontends-common/script/compile.js",
     "build": "npm run delete && concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js",

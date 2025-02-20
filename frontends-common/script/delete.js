@@ -5,14 +5,21 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
+const path = require('path');
+// 添加自定义搜索路径
+[
+  process.cwd()
+].forEach(p => {
+  module.paths.push(p);
+  module.paths.push(path.join(p, 'node_modules'));
+});
+
 const fs = require('fs');
-const path = require('path')
 const fsExtra = require("fs-extra");
 
-const parentDir = path.dirname(__dirname);
 let removeList = [
-    path.join(parentDir, "dist"),
-    path.join(parentDir, "release"),
+    path.join(process.cwd(), "dist"),
+    path.join(process.cwd(), "release"),
 ];
 
 removeList.forEach(value => {
