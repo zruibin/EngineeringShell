@@ -6,14 +6,16 @@
  */
 
 import 'module-alias/register';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Event } from 'electron';
+import electronReload from 'electron-reload';
 import path from 'path';
 import url from 'url';
-import electronReload from 'electron-reload';
 import env from './env';
 import logger from './log';
-import { preloadPath, deletePreload } from './preload';
-import { registerAll, unRegisterAll } from './manager/IPCManager';
+import { deletePreload } from './preload';
+import { registerCrashReport } from './crash';
+import * as ipcManager from './manager/IPCManager';
+import * as windowManager from "./manager/WindowManager";
 
 const appPath = app.getAppPath();
 
@@ -34,22 +36,8 @@ if (env.isDev()) {
 
 let mainWindow: BrowserWindow | null;
 
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 768,
-    webPreferences: {
-      nodeIntegration: false, // 建议保持禁用以增强安全性
-      contextIsolation: true, // 启用上下文隔离
-      sandbox: true, // 是否使用沙盒
-      webSecurity: true, // 启用同源策略
-      allowRunningInsecureContent: false,
-      webgl: true, // 按需启用
-      preload: preloadPath, // 指定预加载脚本
-    }
-  });
-
-  let mainPath = "";
+function createMainPath(): string {
+  let mainPath;
   if (env.isDev()) {
     mainPath = url.format({
       protocol: 'http:',
@@ -57,7 +45,6 @@ function createWindow() {
       pathname: 'index.html',
       slashes: true
     });
-    mainWindow.webContents.openDevTools();
   } else {
     const filePath = path.join(appPath, 'dist/renderer/', 'index.html');
     mainPath = url.format({
@@ -66,73 +53,79 @@ function createWindow() {
       slashes: true
     });
   }
-  logger.info(`loadURL: ${mainPath}`);
-  mainWindow.loadURL(mainPath);
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  logger.info('create window.');
+  logger.debug(`mainPath: ${mainPath}`);
+  return mainPath;
 }
 
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', () => {
-  if (mainWindow === null) createWindow();
-});
-
-app.on('ready', () => {
+function registerAppEvent(): void {
+  app.on('ready', () => {
     logger.info(`app ready.`);
     init();
   });
 
-app.on('activate', () => {
-  logger.info(`app activate, mainWindow: ${mainWindow}`);
-  if (mainWindow) {
-    // 如果窗口最小化，恢复窗口
-    if (mainWindow.isMinimized()) mainWindow.restore()
-    // 如果窗口隐藏，显示窗口
-    if (!mainWindow.isVisible()) mainWindow.show()
-    // 聚焦窗口
-    mainWindow.focus()
-  } else {
-    // 兜底逻辑：重新创建窗口
-    init();
-  }
-});
+  app.on('activate', () => {
+    logger.info(`app activate, mainWindow: ${mainWindow}`);
+    if (mainWindow) {
+      // 如果窗口最小化，恢复窗口
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      // 如果窗口隐藏，显示窗口
+      if (!mainWindow.isVisible()) mainWindow.show()
+      // 聚焦窗口
+      mainWindow.focus()
+    } else {
+      // 兜底逻辑：重新创建窗口
+      init();
+    }
+  });
 
-app.on('window-all-closed', () => {
-  logger.info("app quit on window-all-closed.");
-  if (process.platform !== 'darwin') {
+  app.on('window-all-closed', () => {
+    logger.info("app quit on window-all-closed.");
+    if (process.platform !== 'darwin') {
+      destory();
+      app.quit();
+    }
+  });
+
+  app.on('before-quit', (event) => {
+    logger.info(`app before-quit.`);
+    // showExitAlert(event);
+  });
+
+  app.on('quit', (event: Event, exitCode: number) => {
     destory();
-    app.quit();
-  }
-});
-
-app.on('before-quit', (event) => {
-  logger.info(`app before-quit.`);
-});
-
-app.on('quit', (event, exitCode) => {
-  destory();
-  logger.info(`app quit, exitCode(${exitCode})`);
-});
+    logger.info(`app quit, exitCode(${exitCode})`);
+  });
+}
 
 function init() {
-  logger.debug('init');
-  registerAll();
+  logger.debug("app init.");
+  registerCrashReport();
+  ipcManager.registerAll();
+
+  const loadFileUrl = createMainPath();
+  mainWindow = windowManager.createWindow({
+    name: "main",
+    width: 1280,
+    height: 720,
+    loadFileUrl,
+    willShow: () => {
+
+    }
+  });
 }
 
 function destory() {
-  logger.debug('destory');
+  logger.debug("app destory.");
+  ipcManager.unRegisterAll();
   deletePreload();
-  unRegisterAll();
 }
 
 
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  logger.error("It was not single instance then app quit.");
+  app.quit();
+} else {
+  registerAppEvent();
+}
 
