@@ -5,12 +5,15 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
+import 'module-alias/register';
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import url from 'url';
 import electronReload from 'electron-reload';
 import env from './env';
 import logger from './log';
 import { preloadPath, deletePreload } from './preload';
+import { registerAll, unRegisterAll } from './manager/IPCManager';
 
 const appPath = app.getAppPath();
 
@@ -46,12 +49,25 @@ function createWindow() {
     }
   });
 
+  let mainPath = "";
   if (env.isDev()) {
-    mainWindow.loadURL('http://localhost:3000');
+    mainPath = url.format({
+      protocol: 'http:',
+      host: 'localhost:3000',
+      pathname: 'index.html',
+      slashes: true
+    });
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(appPath, 'dist/renderer/index.html'));
+    const filePath = path.join(appPath, 'dist/renderer/', 'index.html');
+    mainPath = url.format({
+      protocol: 'file:',
+      pathname: filePath,
+      slashes: true
+    });
   }
+  logger.info(`loadURL: ${mainPath}`);
+  mainWindow.loadURL(mainPath);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -109,11 +125,13 @@ app.on('quit', (event, exitCode) => {
 
 function init() {
   logger.debug('init');
+  registerAll();
 }
 
 function destory() {
   logger.debug('destory');
   deletePreload();
+  unRegisterAll();
 }
 
 

@@ -12,5 +12,9 @@ import App from './App';
 window.bridge?.hello();
 console.log(`app path: ${window.bridge?.getAppPath()}`);
 
+const container = document.createElement('div');
+container.id = 'root'
+document.body.appendChild(container)
+
 const root = createRoot(document.getElementById('root')!);
 root.render(<App />);

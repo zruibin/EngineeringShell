@@ -2,10 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug via npm start",
+      "name": "Debug Frontends-js",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/frontends-js",  // 指定工作目录
+      "runtimeExecutable": "npm",
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      },
+      "runtimeArgs": [
+        "run", 
+        "start"
+      ],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+
+    {
+      "name": "Debug Frontends-ts",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontends-ts",  // 指定工作目录
       "runtimeExecutable": "npm",
       "windows": {
         "runtimeExecutable": "npm.cmd"
