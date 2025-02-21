@@ -20,6 +20,24 @@
     },
 
     {
+      "name": "Prod Frontends-js",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontends-js",  // 指定工作目录
+      "runtimeExecutable": "npm",
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      },
+      "runtimeArgs": [
+        "run", 
+        "prod"
+      ],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+
+    {
       "name": "Debug Frontends-ts",
       "type": "node",
       "request": "launch",
@@ -31,6 +49,24 @@
       "runtimeArgs": [
         "run", 
         "start"
+      ],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+
+    {
+      "name": "Prod Frontends-ts",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontends-ts",  // 指定工作目录
+      "runtimeExecutable": "npm",
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      },
+      "runtimeArgs": [
+        "run", 
+        "prod"
       ],
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
