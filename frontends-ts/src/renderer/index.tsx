@@ -8,9 +8,10 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import logger from './log';
 
 window.bridge?.hello();
-console.log(`app path: ${window.bridge?.getAppPath()}`);
+logger.info(`app path: ${window.bridge?.getAppPath()}`);
 
 const container = document.createElement('div');
 container.id = 'root'

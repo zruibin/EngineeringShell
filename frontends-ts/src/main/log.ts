@@ -1,7 +1,9 @@
 
 import { app } from 'electron';
 import path from 'path';
-import log from 'electron-log';
+import log from 'electron-log/main';
+
+log.initialize();
 
 // 通用日志配置
 const configureLogger = () => {
