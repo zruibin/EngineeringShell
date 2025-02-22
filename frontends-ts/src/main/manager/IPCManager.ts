@@ -3,7 +3,7 @@ import { ipcMain, app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import logger from '../log';
-import { encrypt, decrypt } from '@common/cryption';
+import cryption from '../../../../frontends-common/script/cryption';
 
 // 原始方法备份
 const originalHandle = ipcMain.handle;
@@ -127,7 +127,7 @@ export function registerAll() {
   registerListener('cryption.encrypt', (event: any, content: string) => {
     let encrypted = '';
     try {
-      encrypted = encrypt(content);
+      encrypted = cryption.encrypt(content);
     } catch (error) {
       logger.error(`cryption.encrypt error: ${error}`);
     }
@@ -137,7 +137,7 @@ export function registerAll() {
   registerListener('cryption.decrypt', (event: any, content: string) => {
     let decrypted = '';
     try {
-      decrypted = decrypt(content);
+      decrypted = cryption.decrypt(content);
     } catch (error) {
       logger.error(`cryption.decrypt error: ${error}`);
     }

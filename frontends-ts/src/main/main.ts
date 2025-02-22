@@ -5,7 +5,6 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-import 'module-alias/register';
 import { app, BrowserWindow, Event } from 'electron';
 import electronReload from 'electron-reload';
 import path from 'path';

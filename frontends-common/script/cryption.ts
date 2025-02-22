@@ -5,7 +5,7 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 const PASSWORD = 'mySecurePassword123!';
 const SALT = 'a1b2c3d4e5f6g7h8';
@@ -32,7 +32,7 @@ function deriveKey() {
 }
 
 // 加密函数
-function encrypt(plainText) {
+export function encrypt(plainText: string): string {
   const key = deriveKey();
   const iv = crypto.randomBytes(CONFIG.IV_LENGTH);
   
@@ -45,7 +45,7 @@ function encrypt(plainText) {
 }
 
 // 解密函数
-function decrypt(cipherText) {
+export function decrypt(cipherText: string): string {
   const key = deriveKey();
   const [ivHex, encryptedText] = cipherText.split(':');
 
@@ -78,9 +78,9 @@ console.log('解密结果:', decrypted);
 // 验证相同输入是否生成不同密文（因IV随机）
 console.log('二次加密结果:', encrypt(originalText)); // 输出不同
 console.log('二次加密结果:', encrypt(originalText)); // 输出不同
-*/
+//*/
 
-module.exports = {
+export default {
   decrypt,
   encrypt
 };

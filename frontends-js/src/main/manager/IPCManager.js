@@ -9,7 +9,7 @@ const { ipcMain, app } = require('electron')
 const fs = require('fs');
 const path = require('path');
 const logger = require('../log');
-const cryption = require(path.join(process.cwd(), '../frontends-common/script/cryption'));
+const cryption = require('../../../../frontends-common/script/cryption.js');
 
 // 原始方法备份
 const originalHandle = ipcMain.handle;

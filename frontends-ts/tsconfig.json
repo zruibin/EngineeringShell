@@ -11,10 +11,9 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@common/cryption": ["../frontends-common/script/cryption.js"],
+        "@/*": ["./src/*"]
     },
     "allowJs": true,
-    "outDir": "./dist",
-    // "rootDir": "./src"
+    "outDir": "./dist"
   }
 }

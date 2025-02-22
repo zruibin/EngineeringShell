@@ -26,10 +26,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js'],
-    alias: {
-      '@common/cryption$': path.resolve(__dirname, '../frontends-common/script/cryption.js')
-    }
+    extensions: ['.ts', '.js']
   },
   plugins: isProd ? [] : [
     // 仅在初始构建完成后启动 Electron（避免 watch 模式重复启动）

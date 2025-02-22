@@ -1,20 +1,12 @@
 /*
- * check.js
+ * check.ts
  *
  * Created by Ruibin.Chow on 2025/02/15.
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-const path = require('path');
-// 添加自定义搜索路径
-[
-  process.cwd()
-].forEach(p => {
-  module.paths.push(p);
-  module.paths.push(path.join(p, 'node_modules'));
-});
-
-const fs = require('fs-extra');
+import path  from 'path';
+import fs from 'fs';
 
 async function updateMainField() {
   try {
@@ -26,11 +18,12 @@ async function updateMainField() {
     console.log(`packageJsonPath: ${packageJsonPath}`);
 
     const mainEntry = fs.existsSync(tsconfigPath) ? "dist/main/main.js" : "src/main/main.js";
-    const packageJson = await fs.readJson(packageJsonPath);
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
     if (packageJson.main !== mainEntry) {
       packageJson.main = mainEntry;
-      await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+      const data = JSON.stringify(packageJson, null, 2);
+      fs.writeFileSync(packageJsonPath, data);
       console.log(`package.json 已更新，main 字段设置为: ${mainEntry}`);
     }
   } catch (error) {

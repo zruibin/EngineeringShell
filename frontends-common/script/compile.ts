@@ -4,17 +4,9 @@
  * Created by Ruibin.Chow on 2025/02/16.
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
-const path = require('path');
-// 添加自定义搜索路径
-[
-  process.cwd()
-].forEach(p => {
-  module.paths.push(p);
-  module.paths.push(path.join(p, 'node_modules'));
-});
-
-const fs = require('fs-extra');
-const cryption = require(path.join(process.cwd(), '../frontends-common/script/cryption'));
+import path  from 'path';
+import fs from 'fs';
+import cryption from './cryption';
 
 const isUsingCryption = true;
 
@@ -29,6 +21,7 @@ function encryptFile() {
     const data = fs.readFileSync(inputPath, 'utf8');
     const encryptData = cryption.encrypt(data);
     fs.writeFileSync(outputPath, encryptData);
+    console.error("encryptFile:", outputPath);
   } catch (error) {
     console.error("encryptFile error:", error);
   }
@@ -42,7 +35,7 @@ async function complieFunction() {
 
   let packageJson = null;
   try {
-    packageJson = await fs.readJson(packageJsonPath);
+    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));;
   } catch (error) {
     console.error("读取 package.json 失败:", error);
   }
@@ -120,7 +113,8 @@ require('./main.jsc');
       console.log(`package.json已更新，build.files字段设置为: ${JSON.stringify(packageJson.build.files)}`);
     }
     if (wirte) {
-      await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+      const data = JSON.stringify(packageJson, null, 2);
+      fs.writeFileSync(packageJsonPath, data);
     }
   } catch (error) {
     console.error("更新 package.json 失败:", error);

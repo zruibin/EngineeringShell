@@ -31,10 +31,15 @@ module.exports = (mode) => {
       filename:'[name].js',
       clean: true,
     },
+    resolve: {
+      modules: [
+        path.resolve(__dirname, '../frontends-common/script'),
+        'node_modules',
+      ],
+    },
     externals: [nodeExternals()],
     plugins: isProduction ? plugins : pluginsDev,
     devtool: isProduction ? 'source-map':'inline-source-map',
-  
     stats: isProduction ? {
       colors: true,
       children: false,
