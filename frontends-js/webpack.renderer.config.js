@@ -59,11 +59,10 @@ module.exports = (mode) => {
       ]
     },
     target: 'web',
-    entry: appPath + '/index',
+    entry: appPath + '/index.js',
     output: isProduction ? {
       path:path.join(__dirname,'./dist/renderer/'),
-      filename:'[name].js',
-      clean: true,
+      filename:'index.js',
     } : {},
     node: {
       __dirname: false, // 保留真实路径

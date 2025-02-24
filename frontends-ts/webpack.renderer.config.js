@@ -43,7 +43,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', 'jsx']
   },
   output: {
-    filename: 'main.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist/renderer')
   },
   plugins: [

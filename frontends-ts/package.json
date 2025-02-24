@@ -4,7 +4,7 @@
   "description": "A Engineering Shell",
   "author": "Ruibin.Chow",
   "version": "1.0.0",
-  "main": "dist/main/main.js",
+  "main": "dist/main/index.js",
   "scripts": {
     "check": "node --require esbuild-register ../frontends-common/script/check.ts",
     "delete": "node --require esbuild-register ../frontends-common/script/delete.ts",
@@ -28,7 +28,7 @@
     },
     "files": [
       "dist/main/boot.js",
-      "dist/main/main.jsc",
+      "dist/main/index.jsc",
       "dist/renderer/**/*",
       "!dist/**/*.{map,txt}",
       "node_modules/**/*",

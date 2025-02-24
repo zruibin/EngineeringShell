@@ -15,7 +15,7 @@ const plugins = [
     'process.env.NODE_ENV': JSON.stringify('production')
   }),
   // new ChangeMainPlugin({
-  //   newMain: 'dist/main/main.js' // 指定新的main字段值
+  //   newMain: 'dist/main/index.js' // 指定新的main字段值
   // })
 ];
 
@@ -25,11 +25,10 @@ module.exports = (mode) => {
   return {
     target: 'electron-main',
     devtool: 'none',
-    entry: "./src/main" + '/main',
+    entry: './src/main/index.js',
     output: {
-      path:path.join(__dirname,'./dist/main/'),
-      filename:'[name].js',
-      clean: true,
+      filename: 'index.js',
+      path: path.resolve(__dirname, 'dist/main')
     },
     resolve: {
       modules: [
@@ -39,7 +38,7 @@ module.exports = (mode) => {
     },
     externals: [nodeExternals()],
     plugins: isProduction ? plugins : pluginsDev,
-    devtool: isProduction ? 'source-map':'inline-source-map',
+    devtool: isProduction ? 'source-map' : 'eval-source-map',
     stats: isProduction ? {
       colors: true,
       children: false,

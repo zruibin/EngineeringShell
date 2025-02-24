@@ -3,7 +3,7 @@
   "productName": "Engineering Shell",
   "description": "A Engineering Shell",
   "keywords": [],
-  "main": "src/main/main.js",
+  "main": "src/main/index.js",
   "version": "1.0.0",
   "author": "Ruibin.Chow",
   "scripts": {
@@ -29,7 +29,7 @@
     },
     "files": [
       "dist/main/boot.js",
-      "dist/main/main.jsc",
+      "dist/main/index.jsc",
       "dist/renderer/**/*",
       "!dist/renderer/**/*.{map,txt}",
       "node_modules/**/*",

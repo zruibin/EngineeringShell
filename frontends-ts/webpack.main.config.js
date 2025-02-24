@@ -13,7 +13,7 @@ const isProd = process.env.NODE_ENV === 'production';
 module.exports = {
   mode: isProd ? 'production' : 'development',
   target: 'electron-main',
-  entry: './src/main/main.ts',
+  entry: './src/main/index.ts',
   externals: [nodeExternals()],
   devtool: isProd ? 'source-map' : 'eval-source-map',
   module: {
@@ -36,16 +36,16 @@ module.exports = {
         scripts: ['electron .'], 
         blocking: false, // 非阻塞模式（允许与渲染进程并行）
         parallel: true,
-        // 添加安全校验：确保 main.js 存在
+        // 添加安全校验：确保 index.js 存在
         env: { 
-          CHECK_FILE: path.resolve(__dirname, 'dist/main/main.js')
+          CHECK_FILE: path.resolve(__dirname, 'dist/main/index.js')
         }
       },
     }),
   ],
   watch: !isProd, // 保持监听模式
   output: {
-    filename: 'main.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist/main')
   }
 };

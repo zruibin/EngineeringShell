@@ -17,7 +17,7 @@ async function updateMainField() {
     const tsconfigPath = path.join(projectDir, tsconfigJsonName);
     console.log(`packageJsonPath: ${packageJsonPath}`);
 
-    const mainEntry = fs.existsSync(tsconfigPath) ? "dist/main/main.js" : "src/main/main.js";
+    const mainEntry = fs.existsSync(tsconfigPath) ? "dist/main/index.js" : "src/main/index.js";
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
     if (packageJson.main !== mainEntry) {

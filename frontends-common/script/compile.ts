@@ -11,8 +11,8 @@ import cryption from './cryption';
 const isUsingCryption = true;
 
 const distPath = 'dist/renderer/';
-const fileName = 'main.js';
-const encryptFileName = 'main.ejs';
+const fileName = 'index.js';
+const encryptFileName = 'index.ejs';
 const inputPath = path.join(distPath, fileName);
 const outputPath = path.join(distPath, encryptFileName);
 
@@ -45,7 +45,7 @@ async function complieFunction() {
   const bootPath = path.join(projectDir, mainEntry);
   const bootContent = `
 require('bytenode');
-require('./main.jsc');
+require('./index.jsc');
 `;
   fs.writeFile(bootPath, bootContent, (error) => {
     if (error) {
@@ -65,9 +65,10 @@ require('./main.jsc');
 
   const originCode = `<script defer="defer" src="./${fileName}" />`;
   const encryptCode = `
-      const encryptCode = window.bridge.sendSync("readAppFileSync", "${outputPath}");
-      const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
-      eval(code);`;
+  const encryptCode = window.bridge.sendSync("readAppFileSync", "${outputPath}");
+  const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
+  eval(code);
+  `;
 
   const indexContent = `
 <!doctype html>
@@ -80,8 +81,6 @@ require('./main.jsc');
 </head>
 <body>
 <script>
-  // 纯前端隔离方法无法使用jsc
-  // window.bridge.loadByteFile('./main.jsc');
   ${ isUsingCryption ? encryptCode : '' }
 </script>
 </body></html>
