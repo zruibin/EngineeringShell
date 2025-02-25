@@ -82,7 +82,7 @@ function getDirectoriesSync(dirPath) {
   return fs.readdirSync(dirPath)
     .filter(item => {
       const fullPath = path.join(dirPath, item);
-      return fs.statSync(fullPath).isDirectory() && item !== 'main';
+      return fs.statSync(fullPath).isDirectory() && !['main'].includes(item);
     });
 }
 
