@@ -46,7 +46,12 @@ function encryptFile(dir: string, productName: string) {
   const encryptCode = `
     const encryptCode = window.bridge.sendSync("readAppFileSync", "${outputFile}");
     const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
-    eval(code);
+    try {
+      const codeFunc = new Function(code);
+      codeFunc();
+    } catch (err) {
+      console.error('执行失败:', err);
+    }
     `;
 
     const indexContent = `
