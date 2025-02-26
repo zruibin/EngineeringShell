@@ -5,16 +5,16 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-import { app, BrowserWindow, Event } from 'electron';
-import electronReload from 'electron-reload';
 import path from 'path';
 import url from 'url';
+import { app, BrowserWindow, Event, WebContentsView } from 'electron';
+import electronReload from 'electron-reload';
+import { registerCrashReport } from './crash';
 import env from './env';
 import logger from './log';
-import { deletePreload } from './preload';
-import { registerCrashReport } from './crash';
 import * as ipcManager from './manager/IPCManager';
-import * as windowManager from "./manager/WindowManager";
+import * as windowManager from './manager/WindowManager';
+import { deletePreload } from './preload';
 
 const appPath = app.getAppPath();
 
@@ -58,7 +58,7 @@ function createMainPath(): string {
 
 function registerAppEvent(): void {
   app.on('ready', () => {
-    logger.info(`app ready.`);
+    logger.info('app ready.');
     init();
   });
 
@@ -66,11 +66,11 @@ function registerAppEvent(): void {
     logger.info(`app activate, mainWindow: ${mainWindow}`);
     if (mainWindow) {
       // 如果窗口最小化，恢复窗口
-      if (mainWindow.isMinimized()) mainWindow.restore()
+      if (mainWindow.isMinimized()) mainWindow.restore();
       // 如果窗口隐藏，显示窗口
-      if (!mainWindow.isVisible()) mainWindow.show()
+      if (!mainWindow.isVisible()) mainWindow.show();
       // 聚焦窗口
-      mainWindow.focus()
+      mainWindow.focus();
     } else {
       // 兜底逻辑：重新创建窗口
       init();
@@ -78,7 +78,7 @@ function registerAppEvent(): void {
   });
 
   app.on('window-all-closed', () => {
-    logger.info("app quit on window-all-closed.");
+    logger.info('app quit on window-all-closed.');
     if (process.platform !== 'darwin') {
       destory();
       app.quit();
@@ -86,7 +86,7 @@ function registerAppEvent(): void {
   });
 
   app.on('before-quit', (event) => {
-    logger.info(`app before-quit.`);
+    logger.info('app before-quit.');
     // showExitAlert(event);
   });
 
@@ -97,24 +97,34 @@ function registerAppEvent(): void {
 }
 
 function init() {
-  logger.debug("app init.");
+  logger.debug('app init.');
   registerCrashReport();
   ipcManager.registerAll();
 
   const loadFileUrl = createMainPath();
   mainWindow = windowManager.createWindow({
-    name: "main",
+    name: 'main',
     width: 1280,
     height: 720,
     loadFileUrl,
     willShow: () => {
+      // logger.info(`MemoryInfo: ${process.getSystemMemoryInfo()}`);
 
+      // const view1 = new WebContentsView();
+      // mainWindow?.contentView.addChildView(view1);
+      // view1.webContents.loadURL('https://electronjs.org');
+      // view1.setBounds({ x: 0, y: 50, width: 400, height: 400 });
+
+      // const view2 = new WebContentsView();
+      // mainWindow?.contentView.addChildView(view2);
+      // view2.webContents.loadURL('https://github.com/electron/electron');
+      // view2.setBounds({ x: 400, y: 50, width: 400, height: 400 });
     }
   });
 }
 
 function destory() {
-  logger.debug("app destory.");
+  logger.debug('app destory.');
   ipcManager.unRegisterAll();
   deletePreload();
 }
@@ -122,7 +132,7 @@ function destory() {
 
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
-  logger.error("It was not single instance then app quit.");
+  logger.error('It was not single instance then app quit.');
   app.quit();
 } else {
   registerAppEvent();

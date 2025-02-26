@@ -1,6 +1,6 @@
 
-import { app } from 'electron';
 import path from 'path';
+import { app } from 'electron';
 import log from 'electron-log/main';
 
 log.initialize();
@@ -27,7 +27,7 @@ const configureLogger = () => {
 const logger = configureLogger();
 logger.debug(`log path: ${ logger.transports.file?.getFile()?.path ?? '' }`);
 
-const tag = "[TS][F][Main]";
+const tag = '[TS][F][Main]';
 
 export default  {
   info: (...args: any[]) => {

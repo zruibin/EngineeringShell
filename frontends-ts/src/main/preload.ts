@@ -1,7 +1,7 @@
 
-import { app } from 'electron';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import { app } from 'electron';
 import fsExtra from 'fs-extra';
 import env from './env';
 import logger from './log';
@@ -45,7 +45,7 @@ fs.writeFileSync(preloadPath, preloadContent);
 export function deletePreload() {
   if (fs.existsSync(preloadPath)) {
     logger.debug(`removeSync: ${preloadPath}`);
-    fsExtra.removeSync(preloadPath)
+    fsExtra.removeSync(preloadPath);
   }
 }
 

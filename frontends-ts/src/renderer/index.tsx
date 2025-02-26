@@ -5,7 +5,7 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-import React from 'react'
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import logger from './log';
@@ -14,8 +14,8 @@ window.bridge?.hello();
 logger.info(`app path: ${window.bridge?.getAppPath()}`);
 
 const container = document.createElement('div');
-container.id = 'root'
-document.body.appendChild(container)
+container.id = 'root';
+document.body.appendChild(container);
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<App />);

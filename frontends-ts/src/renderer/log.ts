@@ -2,10 +2,10 @@
 import log from 'electron-log/renderer';
 
 const logger = log;
-const tag = "[TS][F][App]";
+const tag = '[TS][F][App]';
 
 export default {
-    info: (...args: any[]) => {
+  info: (...args: any[]) => {
     logger.info(`${tag}[I]`, ...args);
   },                   
   warn: (...args: any[]) => {

@@ -5,21 +5,21 @@
  * Copyright (c) 2025年 Ruibin.Chow All rights reserved.
  */
 
-import { app, crashReporter, Event, Details, RenderProcessGoneDetails } from 'electron';
 import path from 'path';
+import { app, crashReporter, Event, Details, RenderProcessGoneDetails } from 'electron';
 import logger from './log';
 
 function getCrashesDir(): string {
   const userData = app.getPath('userData');
   switch (process.platform) {
-    case 'win32':
-      return path.join(userData, 'Crashpad');
-    case 'darwin':
-      return path.join(userData, 'Crashpad');
-    case 'linux':
-      return path.join(userData, 'Crashpad');
-    default:
-      return path.join(userData, 'Crashes');
+  case 'win32':
+    return path.join(userData, 'Crashpad');
+  case 'darwin':
+    return path.join(userData, 'Crashpad');
+  case 'linux':
+    return path.join(userData, 'Crashpad');
+  default:
+    return path.join(userData, 'Crashes');
   }
 }
 
@@ -35,11 +35,11 @@ export function registerCrashReport(): void {
     ignoreSystemCrashHandler: true // 禁用系统默认崩溃处理
   });
 
-  app.on("child-process-gone", (event: Event, details: Details) => {
+  app.on('child-process-gone', (event: Event, details: Details) => {
     if (details.type === 'GPU') {
       logger.error('GPU进程崩溃:', details.reason);
     } else {
-      logger.warn("app:child-process-gone", event, details);
+      logger.warn('app:child-process-gone', event, details);
     }
   });
 
@@ -51,12 +51,12 @@ export function registerCrashReport(): void {
     // }
   });
 
-  process.on("uncaughtException", (error) => {
-    logger.error("主进程 - 未捕获的异常:", error);
+  process.on('uncaughtException', (error) => {
+    logger.error('主进程 - 未捕获的异常:', error);
   });
 
-  process.on("unhandledRejection", (reason, promise) => {
-    logger.error("主进程 - 未处理的Promise拒绝:", reason, promise);
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error('主进程 - 未处理的Promise拒绝:', reason, promise);
   });
 }
 

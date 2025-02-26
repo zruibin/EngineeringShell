@@ -1,9 +1,9 @@
 
-import { ipcMain, app } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import logger from '../log';
+import { ipcMain, app } from 'electron';
 import cryption from '../../../../frontends-common/script/cryption';
+import logger from '../log';
 
 // 原始方法备份
 const originalHandle = ipcMain.handle;
@@ -13,7 +13,7 @@ const originalOn = ipcMain.on;
 const ipcRegistry = {
   handlers: new Map(), // handle 注册表
   listeners: new Map() // on 注册表
-}
+};
 
 // 封装 ipcMain.handle
 ipcMain.handle = function(channel, handler) {
@@ -36,7 +36,7 @@ ipcMain.handle = function(channel, handler) {
       return {msg: error || '', code: -1};
     }
   });
-}
+};
 
 // 封装 ipcMain.on
 ipcMain.on = function(channel, listener) {
@@ -59,7 +59,7 @@ ipcMain.on = function(channel, listener) {
       return error;
     }
   });
-}
+};
 
 function validateChannel(channel: string) {
   // const allowedChannels = ['app:quit', 'file:read']

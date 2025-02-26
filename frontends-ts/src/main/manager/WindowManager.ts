@@ -63,12 +63,12 @@ export function createWindow(params: any): BrowserWindow {
   });
 
   window.webContents.on('did-finish-load', () => {
-    logger.debug(`window.webContents did-finish-load`);
+    logger.debug('window.webContents did-finish-load');
     addWindowId(name, window.webContents.id);
   });
 
   window.webContents.on('destroyed', () => {
-    logger.debug(`window.webContents destroyed`);
+    logger.debug('window.webContents destroyed');
     if (params.didDestroy) {
       params.didDestroy();
     }
@@ -76,7 +76,7 @@ export function createWindow(params: any): BrowserWindow {
   });
 
   window.once('ready-to-show', () => {
-    logger.debug(`window ready-to-show.`);
+    logger.debug('window ready-to-show.');
     if (env.isDev()) {
       window.webContents.openDevTools();
     }
