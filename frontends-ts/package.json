@@ -7,7 +7,7 @@
   "main": "dist/main/index.js",
   "scripts": {
     "lint": "eslint --config eslint.config.mjs .",
-    "lint:fix": "eslint --config eslint.config.mjs .",
+    "lint:fix": "eslint --config eslint.config.mjs --fix .",
     "check": "node --require esbuild-register ../frontends-common/script/check.ts",
     "delete": "node --require esbuild-register ../frontends-common/script/delete.ts",
     "start:pre": "concurrently \"npm run check\" \"npm run delete\" \"npm run lint:fix || true\"",
