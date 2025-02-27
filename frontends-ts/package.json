@@ -104,8 +104,5 @@
     "webpack-dev-server": "^5.2.0",
     "webpack-node-externals": "^3.0.0",
     "webpack-shell-plugin-next": "^2.3.2"
-  },
-  "_moduleAliases": {
-    "@common/cryption": "../frontends-common/script/cryption.js"
   }
 }
