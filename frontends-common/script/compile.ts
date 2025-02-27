@@ -91,11 +91,23 @@ function getDirectoriesSync(dirPath) {
     });
 }
 
-async function complieFunction() {
-  const packageJsonName = "package.json";
+async function complieFunction(isRecover: Boolean = false) {
   const projectDir = process.cwd();
+  const packageJsonName = "package.json";
+  const packageJsonBakName = "package.json.bak";
   const packageJsonPath = path.join(projectDir, packageJsonName);
+  const packageJsonBakPath = path.join(projectDir, packageJsonBakName);
   console.log(`packageJsonPath: ${packageJsonPath}`);
+
+  if (isRecover) {
+    try {
+      fs.rmSync(packageJsonPath);
+      fs.renameSync(packageJsonBakPath, packageJsonPath);
+    } catch (err) {
+      console.error(`${packageJsonName}文件复原失败: ${err}`);
+    }
+    return;
+  }
 
   let packageJson = null;
   try {
@@ -144,6 +156,7 @@ require('./index.jsc');
     }
     if (wirte) {
       const data = JSON.stringify(packageJson, null, 2);
+      fs.renameSync(packageJsonPath, packageJsonBakPath);
       fs.writeFileSync(packageJsonPath, data);
     }
   } catch (error) {
@@ -151,6 +164,11 @@ require('./index.jsc');
   }
 }
 
-complieFunction();
+const args = process.argv.slice(2);
+if (args?.length > 0 && args[0] === '--recover') {
+  complieFunction(true);
+} else {
+  complieFunction();
+}
 
 

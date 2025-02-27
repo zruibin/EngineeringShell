@@ -54,7 +54,7 @@ module.exports = {
       template: './src/renderer/index.html'
     })
   ],
-  devServer: {
+  devServer: isProd ? {} : {
     port: 3000,
     hot: true,
     static: {

@@ -8,17 +8,19 @@
   "scripts": {
     "lint": "eslint --config eslint.config.mjs .",
     "lint:fix": "eslint --config eslint.config.mjs --fix .",
-    "check": "node --require esbuild-register ../frontends-common/script/check.ts",
     "delete": "node --require esbuild-register ../frontends-common/script/delete.ts",
-    "start:pre": "concurrently \"npm run check\" \"npm run delete\" \"npm run lint:fix || true\"",
+    "start:pre": "concurrently \"npm run delete\" \"npm run lint:fix || true\"",
     "start": "npm run start:pre && concurrently -k \"cross-env NODE_ENV=development webpack --watch --config=webpack.main.config.js\" \"cross-env NODE_ENV=development webpack serve --config=webpack.renderer.config.js\"",
-    "prod": "npm run build && npm run check && electron . --trace-warnings",
+    "prod": "npm run build && electron . --trace-warnings",
     "compile": "bytenode -c dist/main/*.js --electron && node --require esbuild-register ../frontends-common/script/compile.ts",
-    "build": "npm run delete && concurrently \"npm run build:main\" \"npm run build:renderer\" && npm run compile",
+    "recover": "node --require esbuild-register ../frontends-common/script/compile.ts --recover",
+    "build": "npm run delete && concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js",
-    "package": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder"
+    "package": "npm run build && npm run compile && electron-builder --dir",
+    "postpackage": "npm run recover",
+    "dist": "npm run build && npm run compile && electron-builder",
+    "postdist": "npm run recover"
   },
   "license": "MIT",
   "build": {

@@ -8,17 +8,19 @@
   "author": "Ruibin.Chow",
   "scripts": {
     "ts": "node build.mjs",
-    "check": "concurrently \"npm run ts\" \"node --require esbuild-register ../frontends-common/script/check.ts\"",
     "delete": "concurrently \"npm run ts\" \"node --require esbuild-register ../frontends-common/script/delete.ts\"",
-    "start": "npm run check && cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.renderer.config.js --mode development",
-    "prod": "npm run check && cross-env NODE_ENV=production webpack --mode production --config webpack.renderer.config.js && electron --noDevServer .",
+    "start": "npm run ts && cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.renderer.config.js --mode development",
+    "prod": "npm run ts && cross-env NODE_ENV=production webpack --mode production --config webpack.renderer.config.js && electron --noDevServer .",
     "ele": "electron --noDevServer .",
     "compile": "bytenode -c dist/main/*.js --electron && node --require esbuild-register ../frontends-common/script/compile.ts",
+    "recover": "node --require esbuild-register ../frontends-common/script/compile.ts --recover",
     "build_renderer": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js --mode production",
     "build_main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js --mode production",
-    "build": "npm run delete && concurrently \"npm run build_renderer\" \"npm run build_main\" && npm run compile",
-    "package": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder"
+    "build": "npm run delete && concurrently \"npm run build_renderer\" \"npm run build_main\"",
+    "package": "npm run build && npm run compile && electron-builder --dir",
+    "postpackage": "npm run recover",
+    "dist": "npm run build && npm run compile && electron-builder",
+    "postdist": "npm run recover"
   },
   "build": {
     "appId": "cn.zruibin.engineering_shell",
