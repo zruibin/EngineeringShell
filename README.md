@@ -21,3 +21,12 @@ npm install esbuild --save-dev
 执行 node build.mjs即可
 引入时最好把.js带上，否则有可能搜索的是.ts的
 ```
+
+## 参考
+
+* https://mp.weixin.qq.com/s/11_41tTAgw3JcCPq5XCe8w
+* https://mp.weixin.qq.com/s/SM1po543uVENh9k7Rh8ZPw
+* https://codthing.github.io/react/
+* https://www.webpackjs.com/concepts/
+  
+  
