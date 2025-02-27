@@ -9,12 +9,12 @@ import path from 'path';
 import url from 'url';
 import { app, BrowserWindow, Event, WebContentsView } from 'electron';
 import electronReload from 'electron-reload';
-import { registerCrashReport } from './crash';
-import env from './env';
-import logger from './log';
-import * as ipcManager from './manager/IPCManager';
-import * as windowManager from './manager/WindowManager';
-import { deletePreload } from './preload';
+import { registerCrashReport } from '@:/main/crash';
+import env from '@:/main/env';
+import logger from '@:/main/log';
+import * as ipcManager from '@:/main/manager/IPCManager';
+import * as windowManager from '@:/main/manager/WindowManager';
+import { deletePreload } from '@:/main/preload';
 
 const appPath = app.getAppPath();
 

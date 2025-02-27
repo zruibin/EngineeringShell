@@ -26,7 +26,10 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.tsx', '.jsx'],
+    alias: {
+      '@:': path.resolve(__dirname, 'src') // 路径指向 src 目录
+    }
   },
   plugins: isProd ? [] : [
     // 仅在初始构建完成后启动 Electron（避免 watch 模式重复启动）

@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
 import fsExtra from 'fs-extra';
-import env from './env';
-import logger from './log';
+import env from '@:/main/env';
+import logger from '@:/main/log';
 
 
 function getPreloadPath(): string {

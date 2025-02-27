@@ -12,9 +12,9 @@ import {
   Event, 
   RenderProcessGoneDetails 
 } from 'electron';
-import env from '../env';
-import logger from '../log';
-import { preloadPath } from '../preload';
+import env from '@:/main/env';
+import logger from '@:/main/log';
+import { preloadPath } from '@:/main/preload';
 
 const windowsMap: Map<string, number> = new Map();
 

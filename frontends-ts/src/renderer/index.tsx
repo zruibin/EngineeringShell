@@ -7,8 +7,8 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
-import logger from './log';
+import App from '@:/renderer/App';
+import logger from '@:/renderer/log';
 
 window.bridge?.hello();
 logger.info(`app path: ${window.bridge?.getAppPath()}`);

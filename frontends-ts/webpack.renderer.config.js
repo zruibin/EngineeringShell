@@ -40,7 +40,10 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', 'jsx']
+    extensions: ['.ts', '.js', '.tsx', '.jsx'],
+    alias: {
+      '@:': path.resolve(__dirname, 'src') // 路径指向 src 目录
+    }
   },
   output: {
     filename: 'index.js',

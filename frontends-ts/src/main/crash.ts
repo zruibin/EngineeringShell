@@ -7,7 +7,7 @@
 
 import path from 'path';
 import { app, crashReporter, Event, Details, RenderProcessGoneDetails } from 'electron';
-import logger from './log';
+import logger from '@:/main/log';
 
 function getCrashesDir(): string {
   const userData = app.getPath('userData');

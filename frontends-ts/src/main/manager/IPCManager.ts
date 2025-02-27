@@ -2,8 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 import { ipcMain, app } from 'electron';
+import logger from '@:/main/log';
 import cryption from '../../../../frontends-common/script/cryption';
-import logger from '../log';
 
 // 原始方法备份
 const originalHandle = ipcMain.handle;

@@ -54,21 +54,27 @@ export default [
         'error',
         {
           groups: [
-            'builtin', // Node内置
-            'external', // npm包
-            'internal', // 项目内部
+            'builtin', // Node 内置模块（如 fs, path）
+            'external', // 通过 npm 安装的第三方依赖（如 react, lodash）
+            'internal', // 项目内部的模块（如 src/utils 或通过别名定义的路径 @/utils）
+            // "parent"	父级目录中的模块（如 ../utils）, "sibling"	同级目录中的模块（如 ./config）
             ['sibling', 'parent'],
-            'index', // 目录索引
-            'object',
-            'type',
+            'index', // 目录的索引文件（如 ./index.js）
+            'object', // TypeScript 的类型导入（如 import type { Foo } from 'bar';）
+            'type', // 同上（不同 ESLint 版本可能有差异）
           ],
           pathGroups: [
-            { pattern: 'react', group: 'external', position: 'before' },
-            { pattern: '@/**', group: 'internal', position: 'before' },
-            { pattern: './**', group: 'sibling', position: 'after' },
-            { pattern: '@/hooks/**', group: 'internal', position: 'before' },
-            { pattern: '@/icons/**', group: 'internal', position: 'before' },
-            { pattern: '@/images/**', group: 'internal', position: 'before' },
+            { 
+              pattern: '@:/**', // 匹配所有以 @/ 开头的导入
+              group: 'internal', // 归为 internal 分组
+              position: 'before', // 在 internal 分组内靠前排序
+            },
+            // { pattern: 'react', group: 'external', position: 'before' },
+            // { pattern: '@/**', group: 'internal', position: 'before' },
+            // { pattern: './**', group: 'sibling', position: 'after' },
+            // { pattern: '@/hooks/**', group: 'internal', position: 'before' },
+            // { pattern: '@/icons/**', group: 'internal', position: 'before' },
+            // { pattern: '@/images/**', group: 'internal', position: 'before' },
           ],
           // 'newlines-between': 'always',
           // 一定要手动修改下方的值，因为pathGroupsExcludedImportTypes
