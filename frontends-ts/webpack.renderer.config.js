@@ -7,6 +7,7 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const LogTransformer = require('./plugin/LogTransformer');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -19,18 +20,29 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/preset-env',
-              '@babel/preset-typescript',
-              ['@babel/preset-react', {
-                runtime: 'automatic' // 启用新JSX转换
-              }]
-            ]
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                '@babel/preset-env',
+                '@babel/preset-typescript',
+                ['@babel/preset-react', {
+                  runtime: 'automatic' // 启用新JSX转换
+                }]
+              ]
+            }
+          },
+          { 
+            loader: 'ts-loader', 
+            options: { 
+              transpileOnly: true,
+              // getCustomTransformers: () => ({
+              //   before: [LogTransformer] // 在编译阶段应用转换器
+              // })
+            }
           }
-        },
+        ],
         exclude: /node_modules/
       },
       {

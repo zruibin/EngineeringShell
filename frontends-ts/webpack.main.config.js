@@ -7,6 +7,7 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const WebpackShellPluginNext = require('webpack-shell-plugin-next');
+const LogTransformer = require('./plugin/LogTransformer.js');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -20,7 +21,18 @@ module.exports = {
     rules: [
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: [
+          { loader: 'babel-loader' }, 
+          { 
+            loader: 'ts-loader', 
+            options: { 
+              transpileOnly: true,
+              // getCustomTransformers: () => ({
+              //   before: [LogTransformer] // 在编译阶段应用转换器
+              // })
+            }
+          }
+        ],
         exclude: /node_modules/
       }
     ]
