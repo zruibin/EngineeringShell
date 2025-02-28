@@ -12,7 +12,7 @@
     "prestart": "concurrently \"npm run delete\" \"npm run lint:fix || true\"",
     "start": "concurrently -k \"cross-env NODE_ENV=development webpack --watch --config=webpack.main.config.js\" \"cross-env NODE_ENV=development webpack serve --config=webpack.renderer.config.js\"",
     "prod": "npm run build && electron . --trace-warnings",
-    "compile": "bytenode -c dist/main/*.js && node --require esbuild-register ../frontends-common/script/compile.ts",
+    "compile": "node --require esbuild-register ../frontends-common/script/compile.ts",
     "recover": "node --require esbuild-register ../frontends-common/script/compile.ts --recover",
     "build": "npm run delete && concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js",
@@ -31,15 +31,11 @@
       "buildResources": "build"
     },
     "files": [
-      "dist/main/boot.js",
-      "dist/main/index.jsc",
-      "dist/renderer/**/*",
+      "dist/**/*.{html,js}",
       "!dist/**/*.{map,txt}",
       "node_modules/**/*",
       "!node_modules/**/*/{README,readme,LICENSE,license}",
-      "!node_modules/**/*/*.md",
-      "!node_modules/**/*/*.map",
-      "!node_modules/**/*/*.txt"
+      "!node_modules/**/*/*.{md,map,txt}"
     ],
     "mac": {
       "target": [

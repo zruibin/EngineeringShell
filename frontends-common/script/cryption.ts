@@ -7,6 +7,7 @@
 
 import crypto from 'crypto';
 
+const ENABLE = true;
 const PASSWORD = 'mySecurePassword123!';
 const SALT = 'a1b2c3d4e5f6g7h8';
 
@@ -29,6 +30,10 @@ function deriveKey() {
     CONFIG.KEY_LENGTH,
     'sha512'
   );
+}
+
+export function enableCryption(): boolean {
+  return ENABLE;
 }
 
 // 加密函数
@@ -81,6 +86,7 @@ console.log('二次加密结果:', encrypt(originalText)); // 输出不同
 //*/
 
 export default {
+  enableCryption,
   decrypt,
   encrypt
 };

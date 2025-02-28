@@ -6,23 +6,16 @@
  */
 import path  from 'path';
 import fs from 'fs';
-import cryption from './cryption';
+import * as cryption from './cryption';
 
-// async function importFsExtra() {
-//   [
-//     process.cwd()
-//   ].forEach(p => {
-//     module.paths.push(p);
-//     module.paths.push(path.join(p, 'node_modules'));
-//   });
-//   const fsExtra = await import(`${require.resolve('fs-extra')}`);
-//   return fsExtra;
-// }
+[
+  process.cwd()
+].forEach(p => {
+  module.paths.push(p);
+  module.paths.push(path.join(p, 'node_modules'));
+});
 
-const isUsingCryption = true;
 const distDir = './dist';
-
-let excludeFiles: string[] = [];
 
 function encryptFile(dir: string, productName: string) {
   const indexName = 'index.html';
@@ -37,12 +30,10 @@ function encryptFile(dir: string, productName: string) {
     const encryptData = cryption.encrypt(data);
     fs.writeFileSync(outputFile, encryptData);
     console.log("encryptFile:", outputFile);
-    excludeFiles.push(`!${inputFile}`);
   } catch (error) {
     console.error("encryptFile error:", error);
   }
 
-  const originCode = `<script defer="defer" src="./${fileName}" />`;
   const encryptCode = `
     const encryptCode = window.bridge.sendSync("readAppFileSync", "${outputFile}");
     const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
@@ -61,11 +52,10 @@ function encryptFile(dir: string, productName: string) {
       <meta charset="utf-8">
       <title>${productName}</title>
       <meta name="viewport" content="width=device-width,initial-scale=1">
-      ${ isUsingCryption ? '' : originCode }
   </head>
   <body>
   <script>
-    ${ isUsingCryption ? encryptCode : '' }
+    ${ encryptCode }
   </script>
   </body></html>
   `;
@@ -92,6 +82,11 @@ function getDirectoriesSync(dirPath) {
 }
 
 async function complieFunction(isRecover: Boolean = false) {
+  const isUsingCryption = cryption.enableCryption();
+  console.log(`isUsingCryption: ${isUsingCryption}, enable: ${cryption.enableCryption()}`);
+  if (!isUsingCryption) {
+    return;
+  }
   const projectDir = process.cwd();
   const packageJsonName = "package.json";
   const packageJsonBakName = "package.json.bak";
@@ -109,6 +104,13 @@ async function complieFunction(isRecover: Boolean = false) {
     return;
   }
 
+  const bytenode = await import(`${require.resolve('bytenode')}`);
+  console.log('bytenode', bytenode);
+  bytenode.default.compileFile({
+    filename: path.join(projectDir, distDir, 'main/index.js'),
+    electron: true
+  });
+
   let packageJson = null;
   try {
     packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));;
@@ -121,6 +123,7 @@ async function complieFunction(isRecover: Boolean = false) {
   const bootPath = path.join(projectDir, mainEntry);
   const bootContent = `
 require('bytenode');
+delete require.cache[require.resolve('./index.jsc')];
 require('./index.jsc');
 `;
   fs.writeFile(bootPath, bootContent, (error) => {
@@ -131,13 +134,12 @@ require('./index.jsc');
     }
   });
 
-  if (isUsingCryption) {
-    const encryptDirs = getDirectoriesSync(distDir);
-    console.log(`encryptDirs: ${JSON.stringify(encryptDirs)}`);
-    encryptDirs.forEach(value => {
-      encryptFile(path.join(distDir, value), packageJson?.productName ?? '');
-    });
-  }
+
+  const encryptDirs = getDirectoriesSync(distDir);
+  console.log(`encryptDirs: ${JSON.stringify(encryptDirs)}`);
+  encryptDirs.forEach(value => {
+    encryptFile(path.join(distDir, value), packageJson?.productName ?? '');
+  });
 
   // 修改package.json中main入口
   try {
@@ -148,10 +150,18 @@ require('./index.jsc');
       console.log(`package.json已更新，main字段设置为: ${mainEntry}`);
     }
 
-    if (isUsingCryption && packageJson?.build?.files && 
-        !isArrayIncluded(packageJson?.build.files, excludeFiles)) {
+    if (packageJson?.build?.files) {
       wirte = true;
-      packageJson?.build.files.push(...excludeFiles);
+      packageJson?.build?.files.splice(0, packageJson?.build?.files.length);
+      packageJson?.build?.files.push(...[
+        "dist/main/boot.js",
+        "dist/main/index.jsc",
+        "dist/**/*.{html,htm,jsc,ejs}",
+        "!dist/**/*.{map,txt}",
+        "node_modules/**/*",
+        "!node_modules/**/*/{README,readme,LICENSE,license}",
+        "!node_modules/**/*/*.{md,map,txt}"
+      ]);
       console.log(`package.json已更新，build.files字段设置为: ${JSON.stringify(packageJson?.build.files)}`);
     }
     if (wirte) {

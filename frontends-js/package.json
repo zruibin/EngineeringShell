@@ -12,7 +12,7 @@
     "start": "npm run ts && cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.renderer.config.js --mode development",
     "prod": "npm run ts && cross-env NODE_ENV=production webpack --mode production --config webpack.renderer.config.js && electron --noDevServer .",
     "ele": "electron --noDevServer .",
-    "compile": "bytenode -c dist/main/*.js --electron && node --require esbuild-register ../frontends-common/script/compile.ts",
+    "compile": "node --require esbuild-register ../frontends-common/script/compile.ts",
     "recover": "node --require esbuild-register ../frontends-common/script/compile.ts --recover",
     "build_renderer": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js --mode production",
     "build_main": "cross-env NODE_ENV=production webpack --config webpack.main.config.js --mode production",
