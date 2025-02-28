@@ -8,15 +8,17 @@
 const path = require('path');
 const ts = require('typescript');
 
+function capitalizeFirstLetter(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function LogTransformer(ctx) {
   return (sourceFile) => {
     const visitor = (node) => {
       const fileName = path.relative(process.cwd(), sourceFile.fileName);
-      const funcNames = [
-        'info',
-        'debug'
-      ];
-      if (ts.isCallExpression(node) && !fileName.includes('log.ts') && fileName.includes('src')) {
+      const funcNames = ['error', 'warn', 'info', 'verbose', 'debug', 'silly'];
+      if (ts.isCallExpression(node) && fileName.includes('src')) {
         if (
           ts.isPropertyAccessExpression(node.expression) &&
           ts.isIdentifier(node.expression.expression) &&
@@ -24,15 +26,19 @@ function LogTransformer(ctx) {
           funcNames.includes(node.expression.name.text)
         ) {
           // 获取文件名和行号
-          // const fileName = path.relative(process.cwd(), sourceFile.fileName);
           const fileName = path.basename(sourceFile.fileName);
           const lineNumber = ts.getLineAndCharacterOfPosition(
             sourceFile,
             node.getStart()
           ).line + 1;
 
+          // 更准确的方法是先获取第一级目录，再获取第二级目录
+          const fileDir = path.relative(process.cwd(), sourceFile.fileName);
+          const dirParts = path.dirname(fileDir).split(path.sep)[1];
+          const moduleName = capitalizeFirstLetter(dirParts);
+          const level = node.expression.name.text.charAt(0).toUpperCase();
           // console.log(`fileName: ${fileName}, lineNumber: ${lineNumber}`);
-          const insertArg = `[${fileName}:${lineNumber}]`;
+          const insertArg = `[TS][F][${moduleName}][${level}][${fileName}:${lineNumber}]`;
 
           // 创建新参数节点
           const newArgs = [
