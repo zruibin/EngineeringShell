@@ -37,9 +37,9 @@ module.exports = {
             loader: 'ts-loader', 
             options: { 
               transpileOnly: true,
-              // getCustomTransformers: () => ({
-              //   before: [LogTransformer] // 在编译阶段应用转换器
-              // })
+              getCustomTransformers: () => ({
+                before: [LogTransformer] // 在编译阶段应用转换器
+              })
             }
           }
         ],
