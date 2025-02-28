@@ -105,11 +105,15 @@ async function complieFunction(isRecover: Boolean = false) {
   }
 
   const bytenode = await import(`${require.resolve('bytenode')}`);
-  console.log('bytenode', bytenode);
+  // console.log('bytenode', bytenode);
   bytenode.default.compileFile({
     filename: path.join(projectDir, distDir, 'main/index.js'),
     electron: true
-  });
+  }).then(() => {
+    console.log('bytenode successful.');
+  }).catch(err => {
+    console.error('bytenode failed:', err);
+  });;
 
   let packageJson = null;
   try {

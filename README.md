@@ -22,6 +22,14 @@ npm install esbuild --save-dev
 引入时最好把.js带上，否则有可能搜索的是.ts的
 ```
 
+## 注意
+
+* 在Linux下打时报bytenode错误，安装以下几个库可解决
+
+```
+sudo apt install -y libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libgbm1
+```
+
 ## 参考
 
 * https://mp.weixin.qq.com/s/11_41tTAgw3JcCPq5XCe8w
