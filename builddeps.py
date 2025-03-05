@@ -50,7 +50,7 @@ configure = "configure"
 makefile = "Makefile"
 ninjaBuild = "build.ninja"
 
-
+SYSTEM_ENCODING = sys.getdefaultencoding()
 CPU_COUNT = multiprocessing.cpu_count()
 DEPS_ARCH = "DEPS_ARCH"
 
@@ -108,7 +108,7 @@ def operator(cmdString, newline=True):
     sout, serr = res.communicate() # res.stdout, res.stderr
     if serr:
         hasError = False
-        datas = str(serr, "utf-8").split("\n")
+        datas = str(serr, SYSTEM_ENCODING).split("\n")
         for data in datas: 
             log(data)
             if "error:" in data: hasError = True
@@ -119,7 +119,7 @@ def operator(cmdString, newline=True):
             raise Exception(errStr)
     if sout:
         hasError = False
-        datas = str(sout, "utf-8").split("\n")
+        datas = str(sout, SYSTEM_ENCODING).split("\n")
         for data in datas: 
             log(data)
             if "error:" in data: hasError = True
@@ -339,6 +339,9 @@ def configBuild(fileName, configArgs, debugArgs, targetDir=None, genBuilding=Tru
 
 def generateCmakeNinjaArg():
     ninjaArg = ""
+    if(platform.system() == 'Windows'):
+        return ninjaArg
+
     outputBinDir = os.path.join(outputDir, "bin")
     if os.path.exists(outputBinDir):
         exeFiles = os.listdir(outputBinDir)
@@ -411,7 +414,7 @@ def cmakeBuild(fileName, cmakeArgs, debugArgs, targetDir, genBuilding=True, preC
 
 def getDepsJson():
     depsJson = None
-    with open(depsName, 'r', encoding='utf-8') as fw:
+    with open(depsName, 'r', encoding=SYSTEM_ENCODING) as fw:
         # json.dump(json_str, fw, indent=4, ensure_ascii=False)
         jsonString = json_minify(fw.read())
         depsJson = json.loads(jsonString)
@@ -595,6 +598,8 @@ def buildFromDepsFile():
 
 def getAllLibs(libDir):
     libs = []
+    if not os.path.exists(libDir):
+        return libs
     allFiles = os.listdir(libDir)
     for lib in allFiles:
         if os.path.isdir(lib):
@@ -994,7 +999,7 @@ def genRunConfig():
         fileHandle.write(str(tasksFile))
 
     program = "build/Debug/Bin/"
-    with open(cmakeList, "r", encoding='utf-8') as fileHandle:
+    with open(cmakeList, "r", encoding=SYSTEM_ENCODING) as fileHandle:
         content = fileHandle.read()
         result = re.findall(r"project\((.*?)\)", content)
         if len(result) > 0: program = program + result[0]
