@@ -50,7 +50,7 @@ configure = "configure"
 makefile = "Makefile"
 ninjaBuild = "build.ninja"
 
-SYSTEM_ENCODING = sys.getdefaultencoding()
+SYSTEM_ENCODING = 'utf-8' # sys.getdefaultencoding()
 CPU_COUNT = multiprocessing.cpu_count()
 DEPS_ARCH = "DEPS_ARCH"
 
@@ -58,7 +58,7 @@ DEPS_ARCH = "DEPS_ARCH"
 logList = []
 
 def logRecord():
-    with open(os.path.join(homeDir, "builddeps.log"), "a+") as fileHandle:
+    with open(os.path.join(homeDir, "builddeps.log"), "a+", encoding=SYSTEM_ENCODING) as fileHandle:
         for logStr in logList:
             fileHandle.write(str(logStr))
     logList.clear()
@@ -95,11 +95,17 @@ def log(string="", newline=True, color=None, write=True):
         print(string, end="")
     pass
 
+def isWindows():
+    return platform.system() == 'Windows'
+
 def operator(cmdString, newline=True):
     log(cmdString)
     # output = os.popen(cmdString)
     # for line in output.readlines():
     #     log(line, newline)
+    def processBuffer(buffer):
+        return buffer.decode(SYSTEM_ENCODING).split('\n')
+
     res = subprocess.Popen(cmdString, 
                             shell=True, 
                             stdout=subprocess.PIPE,
@@ -108,7 +114,7 @@ def operator(cmdString, newline=True):
     sout, serr = res.communicate() # res.stdout, res.stderr
     if serr:
         hasError = False
-        datas = str(serr, SYSTEM_ENCODING).split("\n")
+        datas = processBuffer(serr)
         for data in datas: 
             log(data)
             if "error:" in data: hasError = True
@@ -119,7 +125,7 @@ def operator(cmdString, newline=True):
             raise Exception(errStr)
     if sout:
         hasError = False
-        datas = str(sout, SYSTEM_ENCODING).split("\n")
+        datas = processBuffer(sout)
         for data in datas: 
             log(data)
             if "error:" in data: hasError = True
@@ -345,7 +351,7 @@ def configBuild(fileName, configArgs, debugArgs, targetDir=None, genBuilding=Tru
 
 def generateCmakeNinjaArg():
     ninjaArg = ""
-    if(platform.system() == 'Windows'):
+    if(isWindows()):
         return ninjaArg
 
     outputBinDir = os.path.join(outputDir, "bin")
