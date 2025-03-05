@@ -148,6 +148,12 @@ def getAllFileInDirectory(DIR, beyoundDir=''):
             array.append(path)
     return array
 
+def on_rm_error(func, path, exc_info):
+    # 修改文件属性为可写
+    os.chmod(path, stat.S_IWUSR)
+    # 再次尝试删除
+    func(path)
+
 def json_minify(string, strip_space=True):
     """
     A port of the `JSON-minify` utility to the Python language.
@@ -307,7 +313,7 @@ def configBuild(fileName, configArgs, debugArgs, targetDir=None, genBuilding=Tru
 
     if genBuilding:
         if os.path.exists(buildGen):
-            shutil.rmtree(buildGen)
+            shutil.rmtree(buildGen, onerror=on_rm_error)
         os.makedirs(buildGen)
         os.chdir(buildGen)
         inode = ".."
@@ -362,7 +368,7 @@ def cmakeBuild(fileName, cmakeArgs, debugArgs, targetDir, genBuilding=True, preC
 
     if genBuilding:
         if os.path.exists(buildGen):
-            shutil.rmtree(buildGen)
+            shutil.rmtree(buildGen, onerror=on_rm_error)
         os.makedirs(buildGen)
         os.chdir(buildGen)
         inode = ".."
@@ -613,6 +619,8 @@ def getAllLibs(libDir):
 
 def getAllFrameworks(libDir):
     frameworks = []
+    if not os.path.exists(libDir):
+        return frameworks
     allFiles = os.listdir(libDir)
     for file in allFiles:
         if ".framework" not in file:
@@ -940,7 +948,7 @@ def clean():
             if os.path.isfile(item):
                 os.remove(item)
             elif os.path.isdir(item):
-                shutil.rmtree(item)
+                shutil.rmtree(item, onerror=on_rm_error)
             log("删除:" + item)
     pass
 
