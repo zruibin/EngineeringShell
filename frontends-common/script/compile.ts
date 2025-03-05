@@ -104,7 +104,11 @@ async function complieFunction(isRecover: Boolean = false) {
     return;
   }
 
-  const bytenode = await import(`${require.resolve('bytenode')}`);
+  let bytenodePath = require.resolve('bytenode');
+  if (process.platform === 'win32') {
+    bytenodePath = 'file:///' + bytenodePath.replace(/\\/g, '/');
+  }
+  const bytenode = await import(bytenodePath);
   // console.log('bytenode', bytenode);
   bytenode.default.compileFile({
     filename: path.join(projectDir, distDir, 'main/index.js'),
