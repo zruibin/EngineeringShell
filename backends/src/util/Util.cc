@@ -11,11 +11,12 @@
 #include <iomanip>
 #include <ctime>
 #include <random>
-#include <pthread.h>
 #include <thread>
 #include <string>
 #include <sstream>
-
+#if defined(__APPLE__) || defined(__MACH__) || defined(__linux__) || defined(__unix__)
+#include <pthread.h>
+#endif
 
 namespace util {
 
@@ -99,18 +100,24 @@ const char* GetRandomString(int32_t len) {
 
 
 int SetThreadName(const char* name) {
-#if defined(__APPLE__)
+#if defined(__APPLE__) && defined(__MACH__)
     return pthread_setname_np(name);
-#else
+#elif defined(__linux__) || defined(__unix__)
     return pthread_setname_np(pthread_self(), name);
+#else
+    return 0;
 #endif
 }
 
 const char* GetCurrentThreadName() {
+#if defined(__APPLE__) || defined(__MACH__) || defined(__linux__) || defined(__unix__)
     constexpr size_t length = 256;
     char threadName[length];
     pthread_getname_np(pthread_self(), threadName, length);
     return threadName;
+#else
+    return "";
+#endif
 }
 
 uint32_t GetCurrentThreadId(void) {

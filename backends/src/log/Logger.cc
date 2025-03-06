@@ -20,6 +20,21 @@ void SetMinWriteLogLevel(LoggingSeverity level) {
 }
 
 static const char* loggingSeverityCover(LoggingSeverity severity) {
+#if defined(_WIN32) || defined(_WIN64)
+    if (severity == VERBOSE) {
+        return "[V]";
+    } else if (severity == DEBUG) {
+        return "[D]";
+    } else if (severity == INFO) {
+        return "[I]";
+    } else if (severity == WARNING) {
+        return "[W]";
+    } else if (severity == ERROR) {
+        return "[E]";
+    } else {
+        return "[N]";
+    }
+#else
     static const char* severityList[] = {
         [NONE] = "[N]",
         [VERBOSE] = "[V]",
@@ -30,6 +45,7 @@ static const char* loggingSeverityCover(LoggingSeverity severity) {
     };
     
     return severityList[severity];
+#endif
 }
 
 LogMessage::LogMessage(const char* file, int line, LoggingSeverity severity, bool origin)
