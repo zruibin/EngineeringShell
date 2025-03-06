@@ -71,6 +71,28 @@
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
+    },
+
+    {
+      "name": "Tauri Development Debug",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["build", "--manifest-path", "./frontends-tauri/src-tauri/Cargo.toml", "--no-default-features"]
+      },
+      "preLaunchTask": "tauri:dev",
+      "internalConsoleOptions": "neverOpen",
+      "console": "externalTerminal"
+    },
+
+    {
+      "name": "Tauri Production Debug",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["build", "--release", "--manifest-path", "./frontends-tauri/src-tauri/Cargo.toml"]
+      },
+      "preLaunchTask": "tauri:prod"
     }
   ]
 }
