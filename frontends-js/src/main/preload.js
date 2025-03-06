@@ -12,7 +12,7 @@ const path = require('path');
 const logger = require('./log');
 const env = require('./env');
 
-const appPath = app.getAppPath();
+const appPath = app.getAppPath().replace(/\\/g, '/');
 
 function getPreloadPath() {
   let preloadPath = null;

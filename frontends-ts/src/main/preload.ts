@@ -18,7 +18,7 @@ function getPreloadPath(): string {
   return preloadPath;
 }
 
-const appPath = app.getAppPath();
+const appPath = app.getAppPath().replace(/\\/g, '/');
 
 // 动态生成 preload 脚本内容
 const preloadContent = `
