@@ -13,7 +13,7 @@
 
 namespace logger {
 
-static LoggingSeverity minWriteLevel = INFO;
+static LoggingSeverity minWriteLevel = LoggingSeverity::INFO;
 
 void SetMinWriteLogLevel(LoggingSeverity level) {
     minWriteLevel = level;
@@ -21,30 +21,31 @@ void SetMinWriteLogLevel(LoggingSeverity level) {
 
 static const char* loggingSeverityCover(LoggingSeverity severity) {
 #if defined(_WIN32) || defined(_WIN64)
-    if (severity == VERBOSE) {
-        return "[V]";
-    } else if (severity == DEBUG) {
-        return "[D]";
-    } else if (severity == INFO) {
-        return "[I]";
-    } else if (severity == WARNING) {
-        return "[W]";
-    } else if (severity == ERROR) {
-        return "[E]";
-    } else {
-        return "[N]";
+    switch (severity) {
+        case LoggingSeverity::VERBOSE:
+            return "[V]";
+        case LoggingSeverity::DEBUG:
+            return "[D]";
+        case LoggingSeverity::INFO:
+            return "[I]";
+        case LoggingSeverity::WARNING:
+            return "[W]";
+        case LoggingSeverity::ERROR:
+            return "[E]";
+        default:
+            return "[N]";
     }
 #else
     static const char* severityList[] = {
-        [NONE] = "[N]",
-        [VERBOSE] = "[V]",
-        [DEBUG] = "[D]",
-        [INFO] = "[I]",
-        [WARNING] = "[W]",
-        [ERROR] = "[E]",
+        [static_cast<uint8_t>(LoggingSeverity::NONE)] = "[N]",
+        [static_cast<uint8_t>(LoggingSeverity::VERBOSE)] = "[V]",
+        [static_cast<uint8_t>(LoggingSeverity::DEBUG)] = "[D]",
+        [static_cast<uint8_t>(LoggingSeverity::INFO)] = "[I]",
+        [static_cast<uint8_t>(LoggingSeverity::WARNING)] = "[W]",
+        [static_cast<uint8_t>(LoggingSeverity::ERROR)] = "[E]",
     };
     
-    return severityList[severity];
+    return severityList[static_cast<uint8_t>(severity)];
 #endif
 }
 

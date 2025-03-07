@@ -13,14 +13,20 @@
 #include <string>
 #include <sstream>
 
-#define Log(severity) logger::LogMessage(__FILE__, __LINE__, logger::severity)
-#define LogOrigin(severity) logger::LogMessage(__FILE__, __LINE__, logger::severity, true)
+#define Log(severity) logger::LogMessage(__FILE__, __LINE__, logger::LoggingSeverity::severity)
+#define LogOrigin(severity) logger::LogMessage(__FILE__, __LINE__, logger::LoggingSeverity::severity, true)
+
+#define LogV Log(VERBOSE)
+#define LogD Log(DEBUG)
+#define LogI Log(INFO)
+#define LogW Log(WARNING)
+#define LogE Log(ERROR)
 
 namespace logger {
 
 extern void SetLoggerFile(const std::string& defaultLoggerFile);
 
-enum LoggingSeverity {
+enum class LoggingSeverity: uint8_t {
     NONE,
     VERBOSE,
     DEBUG,
