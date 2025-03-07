@@ -21,7 +21,7 @@ std::shared_ptr<channel::Channel> GetChannelRef() {
             if (ref) ref->isExit = true;
         }
     });
-    channelRef->SetReceivedHandler([&](uint16_t id,
+    channelRef->SetReceivedHandler([=](uint16_t id,
                                         const char* buf,
                                         std::size_t len,
                                         channel::FrameType frameType) {
