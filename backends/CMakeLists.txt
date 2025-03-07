@@ -108,6 +108,13 @@ if(WIN32)
     message(STATUS "Now is windows")
     add_definitions(-D_WEBSOCKETPP_CPP11_STL_)
     add_definitions(-D_WEBSOCKETPP_CPP11_STRICT_)
+
+    # 降级警告级别
+    # remove_compile_options(/W4 /WX) 
+    add_compile_options(/W3)                     # 基本警告级别
+    add_compile_options(/wd4068 /wd4996)         # 禁用特定警告编号
+    # 禁用警告转错误
+    string(REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 elseif(APPLE)
     message(STATUS "Now is Apple systens.")
 
@@ -131,6 +138,7 @@ elseif(APPLE)
     message(STATUS "Host System Processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
     
     list(APPEND DEPS_LIBS "-framework Foundation")
+    list(APPEND DEPS_LIBS pthread)
 elseif(UNIX)
     message(STATUS "Now is UNIX-like OS's. Including aPPLE os x  and CygWin")
 endif()
@@ -254,7 +262,7 @@ list(APPEND EXECUTE_SOURCES ${ALL_SOURCES} ${HEADERS} ${SOURCES})
 
 
 add_executable(${TARGET} ${EXECUTE_SOURCES} ${RESOURCES})
-target_link_libraries(${TARGET} PRIVATE ${TARGET_LIB} ${DEPS_LIBS} pthread)
+target_link_libraries(${TARGET} PRIVATE ${TARGET_LIB} ${DEPS_LIBS})
 
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/depsSource.cmake")

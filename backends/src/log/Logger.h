@@ -13,6 +13,12 @@
 #include <string>
 #include <sstream>
 
+#if defined(_WIN32) || defined(_WIN64)
+#if defined(ERROR)
+#undef ERROR
+#endif
+#endif
+
 #define Log(severity) logger::LogMessage(__FILE__, __LINE__, logger::LoggingSeverity::severity)
 #define LogOrigin(severity) logger::LogMessage(__FILE__, __LINE__, logger::LoggingSeverity::severity, true)
 

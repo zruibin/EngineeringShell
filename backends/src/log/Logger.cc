@@ -59,7 +59,12 @@ LogMessage::LogMessage(const char* file, int line, LoggingSeverity severity, boo
     stringBuffer_->append("]");
     if (!origin_) {
         stringBuffer_->append("[");
+#if defined(_WIN32) || defined(_WIN64)
+        stringBuffer_->append(fileStr.substr(fileStr.find_last_of("\\") + 1));
+#else
         stringBuffer_->append(fileStr.substr(fileStr.find_last_of("/")+1));
+#endif
+
         stringBuffer_->append(":");
         stringBuffer_->append(std::to_string(line));
         stringBuffer_->append("]");

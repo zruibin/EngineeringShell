@@ -9,7 +9,7 @@
 #include "Channel.h"
 #include "log/Logger.h"
 #include "util/Runloop.h"
-#include "channel/WebSocketChannel.h"
+#include "WebSocketChannel.h"
 
 namespace channel {
 
@@ -22,9 +22,9 @@ std::shared_ptr<channel::Channel> GetChannelRef() {
         }
     });
     channelRef->SetReceivedHandler([&](uint16_t id,
-                                       const char* buf,
-                                       std::size_t len,
-                                       channel::FrameType frameType) {
+                                        const char* buf,
+                                        std::size_t len,
+                                        channel::FrameType frameType) {
         if (channelRef) {
             std::string str(buf, len);
             Log(DEBUG) << "id: " << id << " Received: " << str;
