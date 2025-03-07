@@ -324,15 +324,17 @@ install(
     PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
     GROUP_EXECUTE GROUP_READ
 )
-install(
-    DIRECTORY ${DEPS_LIB_DIR}
-    DESTINATION lib
-    PATTERN "cmake" EXCLUDE
-    PATTERN "pkgconfig" EXCLUDE
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    GROUP_EXECUTE GROUP_READ
-)
 
+if(NOT WIN32)
+    install(
+        DIRECTORY ${DEPS_LIB_DIR}
+        DESTINATION lib
+        PATTERN "cmake" EXCLUDE
+        PATTERN "pkgconfig" EXCLUDE
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+        GROUP_EXECUTE GROUP_READ
+    )
+endif()
 #-------------------------------------------------------------------------------
 
 if(CMAKE_GENERATOR MATCHES "Unix Makefiles" OR CMAKE_GENERATOR MATCHES "Ninja")
