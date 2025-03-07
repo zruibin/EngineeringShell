@@ -18,21 +18,30 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 设置c++的编译选项
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
-if(COMPILER_SUPPORTS_CXX17)
-    set(CMAKE_CXX_STANDARD 17)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++17 support.")
+if(MSVC)
+    CHECK_CXX_COMPILER_FLAG("/std:c++17" COMPILER_SUPPORTS_CXX17)
+    if(COMPILER_SUPPORTS_CXX17)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    else()
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. Please use a different C++ compiler.")
+    endif()
 else()
-    message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. 尝试指定生成器（Generator）和工具集")
-    set(CMAKE_CXX_STANDARD 17)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
+    if(COMPILER_SUPPORTS_CXX17)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    else()
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. Please use a different C++ compiler.")
+    endif()
 endif()
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 17) # 设置 C++ 标准为 C++17
+set(CMAKE_CXX_STANDARD_REQUIRED ON) # 要求必须使用指定的 C++ 标准
+set(CMAKE_CXX_EXTENSIONS OFF) # 禁用编译器特定的扩展
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99") 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-trace")
-    message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+    message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -86,6 +95,7 @@ endfunction()
 #-------------------------------------------------------------------------------
 
 add_definitions("-DPROJECT_DIR=\"${CMAKE_SOURCE_DIR}\"")
+message(STATUS "PROJECT_DIR=\"${CMAKE_SOURCE_DIR}\"")
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/deps/") 
     list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/deps/")
@@ -95,7 +105,9 @@ endif()
 #-------------------------------------------------------------------------------
 
 if(WIN32)
-    message(WARNING "Now is windows")
+    message(STATUS "Now is windows")
+    add_definitions(-D_WEBSOCKETPP_CPP11_STL_)
+    add_definitions(-D_WEBSOCKETPP_CPP11_STRICT_)
 elseif(APPLE)
     message(STATUS "Now is Apple systens.")
 
@@ -116,13 +128,13 @@ elseif(APPLE)
         set(CMAKE_OSX_ARCHITECTURES arm64)
     endif()
     message(STATUS "OSX Architectures: ${CMAKE_OSX_ARCHITECTURES}")
-    message(WARNING "Host System Processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    message(STATUS "Host System Processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
     
     list(APPEND DEPS_LIBS "-framework Foundation")
 elseif(UNIX)
-    message(WARNING "Now is UNIX-like OS's. Including aPPLE os x  and CygWin")
+    message(STATUS "Now is UNIX-like OS's. Including aPPLE os x  and CygWin")
 endif()
-message(WARNING "Operation System: ${CMAKE_SYSTEM}")
+message(STATUS "Operation System: ${CMAKE_SYSTEM}")
 
 #-------------------------------------------------------------------------------
 
@@ -175,7 +187,6 @@ list(APPEND ALL_SOURCES ${MODULES} ${DEPENDS_LIBS})
 
 add_definitions(-DASIO_STANDALONE)
 add_definitions(-DASIO_HAS_STD_SYSTEM_ERROR)
-add_definitions(-D_WEBSOCKETPP_CPP11_INTERNAL_)
 
 #-------------------------------------------------------------------------------
 
@@ -263,13 +274,13 @@ endif()
 #-------------------------------------------------------------------------------
 
 
-message(STATUS "origin installed directory: ${CMAKE_INSTALL_PREFIX}")
-if(${CMAKE_INSTALL_PREFIX} MATCHES "/usr/local")
-    set(install_directory "${PROJECT_SOURCE_DIR}/install")
-    file(MAKE_DIRECTORY ${install_directory})
-    set(CMAKE_INSTALL_PREFIX ${install_directory})
-    message(STATUS "Create installed directory: ${CMAKE_INSTALL_PREFIX}")
-endif()
+message(STATUS "Origin installed directory: ${CMAKE_INSTALL_PREFIX}")
+# if(${CMAKE_INSTALL_PREFIX} MATCHES "/usr/local")
+# endif()
+set(install_directory "${PROJECT_SOURCE_DIR}/install")
+file(MAKE_DIRECTORY ${install_directory})
+set(CMAKE_INSTALL_PREFIX ${install_directory})
+message(STATUS "Create installed directory: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Project will be installed to ${CMAKE_INSTALL_PREFIX}")
 
 install(
