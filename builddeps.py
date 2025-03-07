@@ -104,10 +104,12 @@ def operator(cmdString, newline=True):
     # for line in output.readlines():
     #     log(line, newline)
     def processBuffer(buffer):
-        return buffer.decode(SYSTEM_ENCODING).split('\n')
+        return buffer.split('\n')
 
     res = subprocess.Popen(cmdString, 
-                            shell=True, 
+                            shell=True,
+                            text=True,
+                            encoding=SYSTEM_ENCODING,
                             stdout=subprocess.PIPE,
                             stdin=subprocess.PIPE,
                             stderr=subprocess.PIPE)
