@@ -25,7 +25,7 @@ function processPath(path: string): string {
   return isWindows() ? path.replace(/\\/g, '/') : path;
 }
 
-function encryptFile(dir: string, productName: string) {
+function encryptFile(dir: string, moduleDir: string, productName: string) {
   const indexName = 'index.html';
   const fileName = 'index.js';
   const encryptFileName = 'index.ejs';
@@ -42,8 +42,10 @@ function encryptFile(dir: string, productName: string) {
     console.error("encryptFile error:", error);
   }
 
+  const encrytPath = path.join(distDir, moduleDir, encryptFileName);
+  console.log("encrytPath:", encrytPath);
   const encryptCode = `
-    const encryptCode = window.bridge.sendSync("readAppFileSync", "${processPath(outputFile)}");
+    const encryptCode = window.bridge.sendSync("readAppFileSync", "${processPath(encrytPath)}");
     const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
     try {
       const codeFunc = new Function(code);
@@ -154,7 +156,7 @@ require('./index.jsc');
   const encryptDirs = getDirectoriesSync(distDir);
   console.log(`encryptDirs: ${JSON.stringify(encryptDirs)}`);
   encryptDirs.forEach(value => {
-    encryptFile(path.join(distDir, value), packageJson?.productName ?? '');
+    encryptFile(path.join(distDir, value), value, packageJson?.productName ?? '');
   });
 
   // 修改package.json中main入口
