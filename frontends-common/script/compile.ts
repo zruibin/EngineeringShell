@@ -17,6 +17,14 @@ import * as cryption from './cryption';
 
 const distDir = './dist';
 
+function isWindows(): boolean {
+  return process.platform === 'win32';
+}
+
+function processPath(path: string): string {
+  return isWindows() ? path.replace(/\\/g, '/') : path;
+}
+
 function encryptFile(dir: string, productName: string) {
   const indexName = 'index.html';
   const fileName = 'index.js';
@@ -35,7 +43,7 @@ function encryptFile(dir: string, productName: string) {
   }
 
   const encryptCode = `
-    const encryptCode = window.bridge.sendSync("readAppFileSync", "${outputFile}");
+    const encryptCode = window.bridge.sendSync("readAppFileSync", "${processPath(outputFile)}");
     const code = window.bridge.sendSync("cryption.decrypt", encryptCode);
     try {
       const codeFunc = new Function(code);
@@ -105,7 +113,7 @@ async function complieFunction(isRecover: Boolean = false) {
   }
 
   let bytenodePath = require.resolve('bytenode');
-  if (process.platform === 'win32') {
+  if (isWindows()) {
     bytenodePath = 'file:///' + bytenodePath.replace(/\\/g, '/');
   }
   const bytenode = await import(bytenodePath);
