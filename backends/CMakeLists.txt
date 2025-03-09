@@ -138,7 +138,6 @@ elseif(APPLE)
     message(STATUS "Host System Processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
     
     list(APPEND DEPS_LIBS "-framework Foundation")
-    list(APPEND DEPS_LIBS pthread)
 elseif(UNIX)
     message(STATUS "Now is UNIX-like OS's. Including aPPLE os x  and CygWin")
 endif()
@@ -261,8 +260,13 @@ message(STATUS "RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 list(APPEND EXECUTE_SOURCES ${ALL_SOURCES} ${HEADERS} ${SOURCES})
 
 
-add_executable(${TARGET} ${EXECUTE_SOURCES} ${RESOURCES})
-target_link_libraries(${TARGET} PRIVATE ${TARGET_LIB} ${DEPS_LIBS})
+if(WIN32)
+    add_executable(${TARGET} WIN32 ${EXECUTE_SOURCES} ${RESOURCES})
+    target_link_libraries(${TARGET} PRIVATE ${TARGET_LIB} ${DEPS_LIBS})
+else()
+    add_executable(${TARGET} ${EXECUTE_SOURCES} ${RESOURCES})
+    target_link_libraries(${TARGET} PRIVATE ${TARGET_LIB} ${DEPS_LIBS} pthread)
+endif()
 
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/depsSource.cmake")

@@ -90,8 +90,8 @@ function runSubPrograms() {
     // shell: true, // 启用 Shell（Windows 默认用 cmd.exe）
     windowsHide: true, // 隐藏子进程窗口
     // stdio: ['ignore', 'pipe', 'pipe'] // 忽略输入，捕获输出/错误
-  }).then(({ stdout }) =>  logger.debug('输出:', stdout))
-  .catch((err) => logger.error('错误:', err.message));
+  }).then(({ code, stdout }) =>  logger.debug(`subprogram, code(${code}), stdout:`, stdout))
+  .catch((err) => logger.error(`错误:${JSON.stringify(err)}`));
 }
 
 module.exports = runSubPrograms;
