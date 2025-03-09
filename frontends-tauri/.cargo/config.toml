@@ -9,3 +9,16 @@ registry = "sparse+https://rsproxy.cn/index/"
 
 [net]
 git-fetch-with-cli = true
+
+
+[source.aliyun]
+registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+
+[source.tuna]
+registry = "sparse+https://mirrors.tuna.tsinghua.edu.cn/crates.io-index/"
+
+[source.ustc]
+registry = "https://mirrors.ustc.edu.cn/crates.io-index"
+
+[source.sjtu]
+registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index/"

@@ -38,10 +38,14 @@ npm run prod
 ### Reference
 
 * https://books.irust.net/read/rust-guide/zh-cn/index.html
+* https://doc.rust-lang.org/book/
 * https://v2.tauri.app/zh-cn/start/
 * https://v2.tauri.app/start/
 * https://github.com/infinilabs/coco-app
 * https://gitee.com/zuhrc/TauriNote
+* https://rustcc.cn/
+* https://vectorworkshopbaoerjie.github.io/book/cargobook/index.html
+* https://rustwiki.org/zh-CN/cargo/index.html
 
 
 

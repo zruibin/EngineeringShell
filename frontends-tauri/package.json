@@ -10,13 +10,15 @@
     "lint:fix": "eslint --config eslint.config.mjs --fix .",
     "delete": "node --require esbuild-register ./script/delete.ts",
     "delete:all": "node --require esbuild-register ./script/delete.ts --all",
+    "move": "node --require esbuild-register ./script/move.ts",
     "prestart": "npm run lint:fix",
     "start": "cross-env NODE_ENV=development webpack serve --config=webpack.config.js",
     "prebuild": "npm run delete",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.js",
     "dev": "npx tauri dev",
     "preprod": "npm run delete:all",
-    "prod": "npx tauri build"
+    "prod": "npx tauri build",
+    "postprod": "npm run move"
   },
   "license": "MIT",
   "dependencies": {
