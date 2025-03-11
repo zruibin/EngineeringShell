@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "tauri:dev",
+      "type": "shell",
+      "isBackground": true,
+      "command": "npm",
+      "args": ["run", "start"],
+      "options": {
+          "cwd": "${workspaceFolder}/frontends-tauri"
+      },
+      "problemMatcher": {
+        "base": "$tsc-watch", // 使用 TypeScript 监视任务的匹配器
+        "fileLocation": ["relative", "${workspaceFolder}"]
+      }
+    }
+  ]
+}
