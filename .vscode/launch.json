@@ -74,7 +74,7 @@
     },
 
     {
-      "name": "Tauri Development Debug",
+      "name": "Tauri Rust Debug",
       "type": "lldb",
       "request": "launch",
       "cargo": {
@@ -82,6 +82,30 @@
       },
       "preLaunchTask": "tauri:dev",
       "postDebugTask": "tauri:stop-dev"
+    },
+
+    {
+      "name": "Tauri Web Debug",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontends-tauri",
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "trace": true,
+      "preLaunchTask": "tauri:dev",
+      "postDebugTask": "tauri:stop-dev"
+    }
+  ],
+
+  "compounds": [
+    {
+      "name": "Tauri All Debug",
+      "configurations": ["Tauri Rust Debug", "Tauri Web Debug"],
+      "dependsOn": ["tauri:dev"] 
     }
   ]
 }
+
+
+
