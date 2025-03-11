@@ -12,8 +12,26 @@
       },
       "problemMatcher": {
         "base": "$tsc-watch", // 使用 TypeScript 监视任务的匹配器
-        "fileLocation": ["relative", "${workspaceFolder}"]
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+            "regexp": "^$",
+            "file": 1,
+            "location": 2,
+            "message": 3
+        },
+        "background": {
+            "activeOnStart": true,
+            "beginsPattern": "(.*)",
+            "endsPattern": "webpack (.*) compiled successfully(.*)"
+        }
       }
+    },
+    {
+        "label": "tauri:stop-dev",
+        "type": "shell",
+        "command": "node",
+        "args": ["${workspaceFolder}/.vscode/stop_tauri_dev.js"],
+        "problemMatcher": []
     }
   ]
 }

@@ -80,7 +80,8 @@
       "cargo": {
         "args": ["build", "--manifest-path", "./frontends-tauri/src-tauri/Cargo.toml", "--no-default-features"]
       },
-      "preLaunchTask": "tauri:dev"
+      "preLaunchTask": "tauri:dev",
+      "postDebugTask": "tauri:stop-dev"
     }
   ]
 }
