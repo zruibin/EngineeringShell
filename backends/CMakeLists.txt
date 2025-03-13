@@ -57,6 +57,23 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
+# for [[deprecated("")]] on C++14 or above
+if(MSVC)
+    # MSVC配置
+    add_compile_options(
+        /w14996    # 启用C4996废弃警告
+        # /wd4996    # 禁用C4996废弃警告
+        # /we4996    # 将C4996警告视为错误
+    )
+else()
+    # GCC/Clang配置
+    add_compile_options(
+        -Wdeprecated-declarations    # 启用废弃警告（默认已开启）
+        # -Wno-deprecated-declarations # 禁用废弃警告
+        # -Werror=deprecated-declarations # 将警告升级为错误
+    )
+endif()
+
 #-------------------------------------------------------------------------------
 
 function(deleteFiles)
