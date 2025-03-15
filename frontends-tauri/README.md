@@ -46,6 +46,8 @@ npm run prod
 * https://rustcc.cn/
 * https://vectorworkshopbaoerjie.github.io/book/cargobook/index.html
 * https://rustwiki.org/zh-CN/cargo/index.html
+* https://juejin.cn/post/7444517894816743459
+* https://www.cnblogs.com/vinciyan/p/18308423
 
 
 
