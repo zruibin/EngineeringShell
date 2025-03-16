@@ -20,7 +20,7 @@ export default [
   // 基础全局配置
   // ----------------------------------
   {
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', '.cache/**'],
   },
   {
     languageOptions: {
