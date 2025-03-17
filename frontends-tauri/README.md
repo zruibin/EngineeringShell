@@ -39,6 +39,7 @@ npm run prod
 
 * https://books.irust.net/read/rust-guide/zh-cn/index.html
 * https://doc.rust-lang.org/book/
+* https://v2.tauri.org.cn/
 * https://v2.tauri.app/zh-cn/start/
 * https://v2.tauri.app/start/
 * https://github.com/infinilabs/coco-app
