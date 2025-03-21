@@ -1,5 +1,15 @@
 {
   "rust-analyzer.linkedProjects": [
     "frontends-tauri/src-tauri/Cargo.toml"
-  ]
+  ],
+
+  "eslint.validate": ["typescript", "vue"], // 检测语言类型
+  "eslint.useFlatConfig": true, // 启用 ESLint 9 扁平化配置
+  "editor.formatOnSave": false, // 避免与 ESLint 修复冲突
+  "eslint.rules.customizations": [
+    {
+      "no-restricted-imports": "error" // 错误级别提示
+    }
+  ],
+  "errorLens.messageMaxChars": 120
 }

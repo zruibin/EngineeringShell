@@ -14,6 +14,25 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import * as espree from 'espree';
 import globals from 'globals';
 
+const noRestrictedImports = [
+  'error',
+  {
+    // 支持通配符拦截子模块（如@tauri-apps/api/*）
+    'patterns': [{
+      'group': ['@tauri-apps/api/*'],
+      'message': ' 🚫 禁止直接导入Tauri API，请使用封装后的安全模块(bridge.ts), 白名单路径除外.',
+      // 'caseSensitive': true
+    }]
+  }
+];
+
+const whiteCheckConfig = {
+  files: ['src/bridge.ts'],
+  rules: {
+    'no-restricted-imports': 'off' // 关闭白名单路径的拦截
+  }
+};
+
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
   // ----------------------------------
@@ -105,6 +124,7 @@ export default [
       ...tsPlugin.configs.recommended.rules, // 替换原 extends: 'plugin:@typescript-eslint/recommended'
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      'no-restricted-imports': noRestrictedImports,
     },
   },
 
@@ -126,6 +146,9 @@ export default [
       'no-unused-vars': 'warn',
       // 'react/jsx-uses-react': 'error',
       // 'react-hooks/rules-of-hooks': 'error',
+      'no-restricted-imports': noRestrictedImports,
     },
   },
+
+  whiteCheckConfig,
 ];
