@@ -7,6 +7,7 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CheckImportTransformer = require('./plugin/CheckImportTransformer');
 const LogTransformer = require('./plugin/LogTransformer');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -38,7 +39,10 @@ module.exports = {
             options: { 
               transpileOnly: true,
               getCustomTransformers: () => ({
-                before: [LogTransformer] // 在编译阶段应用转换器
+                before: [
+                  LogTransformer,
+                  CheckImportTransformer
+                ] // 在编译阶段应用转换器
               })
             }
           }
