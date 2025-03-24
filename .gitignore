@@ -31,8 +31,10 @@ builddeps.log
 .cache/
 
 node_modules
-package-lock.json
 package.json.bak
+.npmrc
+*-lock.yaml
+*-lock.json
 dist/
 dynamic_preload.js
 frontends-common/script/*.js
