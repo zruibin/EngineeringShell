@@ -16,12 +16,16 @@
     "start:webpack": "cross-env NODE_ENV=development webpack serve --config=webpack.config.js",
     "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.js",
     "prestart": "npm run lint:fix",
-    "start": "npm run start:webpack",
-    "build": "npm run build:webpack",
+    "start": "npm run start:rspack",
+    "build": "npm run build:rspack",
     "dev": "npx tauri dev",
     "preprod": "npm run delete:all",
     "prod": "npx tauri build",
-    "postprod": "npm run move"
+    "postprod": "npm run move",
+    "dev:ios": "npx tauri ios dev",
+    "prod:ios": "npx tauri ios build",
+    "dev:android": "npx tauri android dev",
+    "prod:android": "npx tauri android build"
   },
   "license": "MIT",
   "dependencies": {
