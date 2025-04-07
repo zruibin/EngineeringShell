@@ -416,6 +416,7 @@ def cmakeBuild(fileName, cmakeArgs, debugArgs, targetDir, genBuilding=True, preC
     cmdList = [operatePrefix, "cmake",
                 cmakeArgs,
                 otherCmakeArgs,
+                "-DCMAKE_PREFIX_PATH="+outputDir,
                 "-DCMAKE_INSTALL_PREFIX="+outputDir, 
                 inode,
                 ]
@@ -470,6 +471,8 @@ def getDictValues(depsDict):
     args = None
     if "args" in depsDict:
         args = depsDict["args"]
+        if type(args) == list:
+            args = ' '.join(args)
 
     debugArgs = None
     if "debug_args" in depsDict:
