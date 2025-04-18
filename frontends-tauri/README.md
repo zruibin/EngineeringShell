@@ -56,8 +56,6 @@ npm run prod:android
 
 ### Reference
 
-* https://books.irust.net/read/rust-guide/zh-cn/index.html
-* https://doc.rust-lang.org/book/
 * https://v2.tauri.org.cn/
 * https://v2.tauri.app/zh-cn/start/
 * https://v2.tauri.app/start/
@@ -71,6 +69,19 @@ npm run prod:android
 * https://dev.to/adimac93/tauri-mobile-for-ios-4dp6
 * https://github.com/tauri-apps/tauri/issues/9509
 * https://juejin.cn/post/7439646884589207564
+
+### Rust Article
+
+* https://books.irust.net/read/rust-guide/zh-cn/index.html
+* https://doc.rust-lang.org/book/
+* https://course.rs/about-book.html
+* https://rustycab.github.io/LearnRustEasy/chapter_1.html
+* https://zjp-cn.github.io/tlborm/
+* https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzkyMzYxNTUwMw==&action=getalbum&album_id=3201395598868971523&%20scene=173&subscene=&sessionid=svr_633d5a2967a&enterid=1742045008&from_msgid=2247489443&from_itemidx=1&count=3&nolastread=1
+* https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MjM5OTc0NTUxMg==&action=getalbum&album_id=3372358402479325190&scene=126
+* https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MjM5OTc0NTUxMg==&action=getalbum&album_id=3363283918820605953&scene=126
+* https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzI1OTIzNDIxNg==&action=getalbum&album_id=3179433038586363904&scene=173&subscene=169&sessionid=undefined&enterid=0&from_msgid=2247486624&from_itemidx=1&count=3&nolastread=1
+
 
 
 
