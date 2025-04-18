@@ -10,6 +10,15 @@
     ,
     {
         "action": "git",
+        "fileName": "breakpad",
+        "url": "git clone -b v2024.02.16 --depth=1 https://github.com/google/breakpad.git",
+        "build": "config",
+        "args": ""
+    }
+
+    ,
+    {
+        "action": "git",
         "fileName": "json",
         "url": "git clone -b v3.11.3 --depth=1 https://github.com/nlohmann/json.git",
         "build": "cmake",
